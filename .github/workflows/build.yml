@@ -50,8 +50,7 @@ jobs:
           --no-self-contained `
           --output artifacts/framework-dependent `
           -p:PublishSingleFile=true `
-          -p:IncludeNativeLibrariesForSelfExtract=true `
-          -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
           
         # 2. Self-contained single file
         Write-Host "Building self-contained single-file executable..."
