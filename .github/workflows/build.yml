@@ -219,27 +219,50 @@ jobs:
       run: |
         gh release create "${{ github.ref_name }}" \
           --title "HudClock ${{ github.ref_name }}" \
-          --notes "## Download Options
+          --notes "## 📦 Download Options
         
-        ### 🚀 Recommended: Windows Installer
-        **HudClock-${{ github.ref_name }}-Setup.exe** - Easy Windows installer with Start Menu shortcuts and uninstaller. Requires .NET 8 Desktop Runtime.
+        ### 🎯 Windows Installer (Recommended)
+        **\`HudClock-${{ github.ref_name }}-Setup.exe\`** - Easy installation with Start Menu shortcuts
+        - ✅ Automatic uninstaller
+        - ✅ Optional desktop shortcut
+        - ✅ Run at startup option
+        - ⚠️ Requires [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0/runtime)
         
-        ### 💾 Self-Contained Version
-        **HudClock-win-x64-self-contained.zip** - Single executable file that includes everything needed to run. No installation or .NET runtime required. Just download, extract, and run!
+        ### 🚀 Self-Contained Portable
+        **\`HudClock-win-x64-self-contained.zip\`** - All-in-one portable version
+        - ✅ Single ~90MB executable
+        - ✅ No installation required
+        - ✅ Includes .NET runtime
+        - ✅ Run from anywhere
         
-        ### 📦 Other Options
-        - **HudClock-win-x64-portable.zip** - Portable single executable (requires .NET 8 Desktop Runtime)
+        ### ⚡ Lightweight Portable
+        **\`HudClock-win-x64-portable.zip\`** - Minimal portable version
+        - ✅ Single ~5MB executable
+        - ✅ Fast startup
+        - ✅ No installation required
+        - ⚠️ Requires [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0/runtime)
         
-        ## System Requirements
+        ## 💻 System Requirements
         - Windows 10 or later (64-bit)
-        - .NET 8 Desktop Runtime (only for installer and portable versions)
+        - 1920x1080 or higher resolution recommended
+        - ~100MB RAM when running
         
-        ## Installation
-        1. Download your preferred version
-        2. Extract the ZIP file to any location
-        3. Run \`HudClock.exe\`
-        4. (Optional) Create a shortcut for easy access
+        ## 🛡️ Security
+        The portable build has been scanned with VirusTotal. The self-contained build exceeds VirusTotal's 32MB file size limit for free scanning but is built from the same source code.
         
-        ## What's New
-        See [commits](https://github.com/lionfire/hudclock/commits/${{ github.ref_name }}) for details." \
+        ## 📝 What's New in ${{ github.ref_name }}
+        - Added Windows installer with Inno Setup
+        - Fixed compile warnings for nullable references
+        - Improved GitHub Pages with Cayman theme
+        - Streamlined portable builds
+        - Fixed VirusTotal scanning rate limits
+        
+        See [full changelog](https://github.com/lionfire/hudclock/compare/v1.1.0...${{ github.ref_name }}) for details.
+        
+        ## 🚀 Quick Start
+        1. Download your preferred version above
+        2. For installer: Run the .exe and follow the wizard
+        3. For portable: Extract the ZIP and run HudClock.exe
+        4. Right-click the clock to access settings
+        5. Press Ctrl+Shift+C to toggle click-through mode" \
           release-files/*
