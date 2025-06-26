@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <!-- Read version from VERSION file -->
+    <VersionPrefix>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)VERSION').Trim())</VersionPrefix>
+    <FileVersion>$(VersionPrefix).0</FileVersion>
+    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+    
+    <!-- Common properties for all projects -->
+    <Product>HudClock</Product>
+    <Company>LionFire</Company>
+    <Copyright>Copyright © 2025 LionFire</Copyright>
+    
+    <!-- Source control -->
+    <RepositoryUrl>https://github.com/lionfire/hudclock</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>

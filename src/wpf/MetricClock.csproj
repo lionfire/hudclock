@@ -11,11 +11,7 @@
     <!-- Application Info -->
     <AssemblyName>HudClock</AssemblyName>
     <ApplicationIcon>HudClock.ico</ApplicationIcon>
-    <Product>HudClock</Product>
-    <Company>LionFire</Company>
-    <Copyright>Copyright © 2025 LionFire</Copyright>
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0.0</FileVersion>
+    <!-- Version and company info inherited from Directory.Build.props -->
     
     <!-- Publishing Settings -->
     <PublishSingleFile>false</PublishSingleFile>

@@ -17,6 +17,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Get version
+      id: version
+      run: |
+        $version = (Get-Content VERSION -Raw).Trim()
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "Building HudClock v$version"
+      shell: pwsh
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -87,8 +95,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
     
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
@@ -96,44 +109,30 @@ jobs:
         path: artifacts
         
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: HudClock ${{ github.ref }}
-        draft: false
-        prerelease: false
-        body: |
-          ## Download Options
-          
-          ### 🚀 Recommended: Self-Contained Version
-          **[HudClock-win-x64-self-contained.zip]** - Single executable file that includes everything needed to run. No installation or .NET runtime required. Just download, extract, and run!
-          
-          ### 📦 Other Options
-          - **[HudClock-win-x64-framework-dependent.zip]** - Smaller single executable (requires .NET 8 Desktop Runtime)
-          - **[HudClock-win-x64-portable.zip]** - Traditional portable app with multiple files
-          
-          ## System Requirements
-          - Windows 10 or later (64-bit)
-          - .NET 8 Desktop Runtime (only for framework-dependent version)
-          
-          ## Installation
-          1. Download your preferred version
-          2. Extract the ZIP file to any location
-          3. Run `HudClock.exe`
-          4. (Optional) Create a shortcut for easy access
-          
-          ## What's New
-          See [commits](https://github.com/lionfire/hudclock/commits/${{ github.ref }}) for details.
-        
-    - name: Upload Release Assets
       run: |
-        for file in artifacts/*.zip; do
-          asset_name=$(basename "$file")
-          echo "Uploading $asset_name..."
-          gh release upload "${{ github.ref_name }}" "$file" --clobber
-        done
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        gh release create "${{ github.ref_name }}" \
+          --title "HudClock ${{ github.ref_name }}" \
+          --notes "## Download Options
+        
+        ### 🚀 Recommended: Self-Contained Version
+        **HudClock-win-x64-self-contained.zip** - Single executable file that includes everything needed to run. No installation or .NET runtime required. Just download, extract, and run!
+        
+        ### 📦 Other Options
+        - **HudClock-win-x64-framework-dependent.zip** - Smaller single executable (requires .NET 8 Desktop Runtime)
+        - **HudClock-win-x64-portable.zip** - Traditional portable app with multiple files
+        
+        ## System Requirements
+        - Windows 10 or later (64-bit)
+        - .NET 8 Desktop Runtime (only for framework-dependent version)
+        
+        ## Installation
+        1. Download your preferred version
+        2. Extract the ZIP file to any location
+        3. Run \`HudClock.exe\`
+        4. (Optional) Create a shortcut for easy access
+        
+        ## What's New
+        See [commits](https://github.com/lionfire/hudclock/commits/${{ github.ref_name }}) for details." \
+          artifacts/*.zip
