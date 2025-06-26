@@ -24,6 +24,10 @@
   <!-- Single-file publishing configuration -->
   <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+  
+  <!-- Compression only for self-contained single-file builds -->
+  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true' AND '$(SelfContained)' == 'true'">
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
   
