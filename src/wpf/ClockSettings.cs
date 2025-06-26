@@ -766,19 +766,22 @@ namespace MetricClock
         {
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true) ?? throw new InvalidOperationException("Cannot open registry key"))
+                using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true))
                 {
-                    if (runAtStartup)
+                    if (key != null)
                     {
-                        string appPath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "";
-                        if (!string.IsNullOrEmpty(appPath))
+                        if (runAtStartup)
                         {
-                            key.SetValue("HudClock", $"\"{appPath}\"");
+                            string appPath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "";
+                            if (!string.IsNullOrEmpty(appPath))
+                            {
+                                key.SetValue("HudClock", $"\"{appPath}\"");
+                            }
                         }
-                    }
-                    else
-                    {
-                        key.DeleteValue("HudClock", false);
+                        else
+                        {
+                            key.DeleteValue("HudClock", false);
+                        }
                     }
                 }
             }
@@ -792,7 +795,7 @@ namespace MetricClock
         {
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
+                using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
                 {
                     if (key != null)
                     {

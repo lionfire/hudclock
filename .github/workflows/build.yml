@@ -40,6 +40,15 @@ jobs:
       with:
         dotnet-version: 8.0.x
         
+    - name: Install Inno Setup
+      run: |
+        Write-Host "Downloading Inno Setup..."
+        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "innosetup-installer.exe"
+        Write-Host "Installing Inno Setup..."
+        Start-Process -FilePath "innosetup-installer.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-" -Wait
+        Write-Host "Inno Setup installed"
+      shell: pwsh
+        
     - name: Restore dependencies
       run: dotnet restore src/wpf/MetricClock.csproj
       
@@ -60,7 +69,9 @@ jobs:
           --no-self-contained `
           --output artifacts/framework-dependent `
           -p:PublishSingleFile=true `
-          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:DebugType=None `
+          -p:DebugSymbols=false
           
         # 2. Self-contained single file
         Write-Host "Building self-contained single-file executable..."
@@ -80,15 +91,41 @@ jobs:
           --configuration Release `
           --runtime win-x64 `
           --no-self-contained `
-          --output artifacts/portable
+          --output artifacts/portable `
+          -p:DebugType=None `
+          -p:DebugSymbols=false
           
+        # 4. Build for installer (framework-dependent, no single file)
+        Write-Host "Building for installer..."
+        dotnet publish src/wpf/MetricClock.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --no-self-contained `
+          --output src/wpf/bin/Release/net8.0-windows/win-x64/publish `
+          -p:DebugType=None `
+          -p:DebugSymbols=false
+          
+        # Create installer
+        Write-Host "Creating installer..."
+        # Update version in installer script
+        $version = (Get-Content VERSION -Raw).Trim()
+        $issContent = Get-Content installer/setup.iss -Raw
+        $issContent = $issContent -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"$version`""
+        Set-Content installer/setup.iss $issContent
+        
+        # Run Inno Setup
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/setup.iss
+        
+        # Move installer to artifacts
+        Move-Item -Path dist/*.exe -Destination artifacts/
+        
         # Create zip files
         Write-Host "Creating archives..."
         Compress-Archive -Path artifacts/framework-dependent/* -DestinationPath artifacts/HudClock-win-x64-framework-dependent.zip
         Compress-Archive -Path artifacts/self-contained/* -DestinationPath artifacts/HudClock-win-x64-self-contained.zip
         Compress-Archive -Path artifacts/portable/* -DestinationPath artifacts/HudClock-win-x64-portable.zip
         
-        # Clean up directories, keep only zips
+        # Clean up directories, keep only zips and installer
         Remove-Item -Recurse -Force artifacts/framework-dependent
         Remove-Item -Recurse -Force artifacts/self-contained
         Remove-Item -Recurse -Force artifacts/portable
@@ -111,6 +148,12 @@ jobs:
       with:
         name: hudclock-self-contained
         path: artifacts/HudClock-win-x64-self-contained.zip
+        
+    - name: Upload Installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: hudclock-installer
+        path: artifacts/HudClock-*-Setup.exe
         
   virustotal-scan:
     needs: build
@@ -184,9 +227,10 @@ jobs:
         
     - name: Prepare release files
       run: |
-        # Move all zip files to a single directory
+        # Move all zip files and installer to a single directory
         mkdir -p release-files
         find artifacts -name "*.zip" -exec mv {} release-files/ \;
+        find artifacts -name "*.exe" -exec mv {} release-files/ \;
         ls -la release-files/
         
     - name: Create Release
@@ -197,7 +241,10 @@ jobs:
           --title "HudClock ${{ github.ref_name }}" \
           --notes "## Download Options
         
-        ### 🚀 Recommended: Self-Contained Version
+        ### 🚀 Recommended: Windows Installer
+        **HudClock-${{ github.ref_name }}-Setup.exe** - Easy Windows installer with Start Menu shortcuts and uninstaller. Requires .NET 8 Desktop Runtime.
+        
+        ### 💾 Self-Contained Version
         **HudClock-win-x64-self-contained.zip** - Single executable file that includes everything needed to run. No installation or .NET runtime required. Just download, extract, and run!
         
         ### 📦 Other Options
@@ -216,4 +263,4 @@ jobs:
         
         ## What's New
         See [commits](https://github.com/lionfire/hudclock/commits/${{ github.ref_name }}) for details." \
-          release-files/*.zip
+          release-files/*

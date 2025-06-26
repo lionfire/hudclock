@@ -254,7 +254,7 @@ namespace MetricClock
                             Foreground = System.Windows.Media.Brushes.Black,
                             FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                             FontSize = ClockSettings.Instance.AnalogFontSize * elementScale,
-                            FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
+                            FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
@@ -267,7 +267,7 @@ namespace MetricClock
                             Foreground = System.Windows.Media.Brushes.Black,
                             FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                             FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9,
-                            FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
+                            FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
@@ -280,7 +280,7 @@ namespace MetricClock
                             Foreground = System.Windows.Media.Brushes.Black,
                             FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                             FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8,
-                            FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
+                            FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
@@ -314,7 +314,7 @@ namespace MetricClock
                                 Foreground = System.Windows.Media.Brushes.Black,
                                 FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                                 FontSize = ClockSettings.Instance.AnalogFontSize * elementScale,
-                                FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
+                                FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                                 TextAlignment = TextAlignment.Center,
                                 VerticalAlignment = VerticalAlignment.Center,
                                 Opacity = 1.0
@@ -330,7 +330,7 @@ namespace MetricClock
                                 Foreground = System.Windows.Media.Brushes.Black,
                                 FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                                 FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9,
-                                FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
+                                FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                                 TextAlignment = TextAlignment.Center,
                                 VerticalAlignment = VerticalAlignment.Center,
                                 Opacity = 1.0
@@ -346,7 +346,7 @@ namespace MetricClock
                                 Foreground = System.Windows.Media.Brushes.Black,
                                 FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                                 FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8,
-                                FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
+                                FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                                 TextAlignment = TextAlignment.Center,
                                 VerticalAlignment = VerticalAlignment.Center,
                                 Opacity = 1.0
@@ -367,19 +367,19 @@ namespace MetricClock
                     {
                         hourNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale;
                         hourNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
-                        hourNumber.FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight);
+                        hourNumber.FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight);
                     }
                     if (minuteNumber != null) 
                     {
                         minuteNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9;
                         minuteNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
-                        minuteNumber.FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight);
+                        minuteNumber.FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight);
                     }
                     if (secondNumber != null) 
                     {
                         secondNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8;
                         secondNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
-                        secondNumber.FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight);
+                        secondNumber.FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight);
                     }
                 }
             }
@@ -567,6 +567,20 @@ namespace MetricClock
             hand.Y1 = centerY;
             hand.X2 = centerX + length * Math.Cos(radians);
             hand.Y2 = centerY + length * Math.Sin(radians);
+        }
+
+        private FontWeight GetFontWeight(string fontWeightString)
+        {
+            try
+            {
+                var converter = new FontWeightConverter();
+                var result = converter.ConvertFromString(fontWeightString);
+                return result != null ? (FontWeight)result : FontWeights.Normal;
+            }
+            catch
+            {
+                return FontWeights.Normal;
+            }
         }
 
         public void RefreshStyle()
