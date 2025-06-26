@@ -1,0 +1,60 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Simple glow for main elements -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Dark background gradient -->
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f1a;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background fills entire space -->
+  <rect width="256" height="256" fill="url(#bgGradient)"/>
+  
+  <!-- HUD corner brackets - minimal -->
+  <g stroke="#00ff88" stroke-width="2" fill="none" opacity="0.8">
+    <path d="M8 32 L8 8 L32 8"/>
+    <path d="M224 8 L248 8 L248 32"/>
+    <path d="M248 224 L248 248 L224 248"/>
+    <path d="M32 248 L8 248 L8 224"/>
+  </g>
+  
+  <!-- Main clock circle - fills most of space -->
+  <circle cx="128" cy="128" r="110" 
+          stroke="#00ff88" 
+          stroke-width="3" 
+          fill="none" 
+          filter="url(#glow)"/>
+  
+  <!-- Essential hour markers - only 12, 3, 6, 9 -->
+  <g stroke="#00ff88" stroke-width="3">
+    <!-- 12 o'clock -->
+    <line x1="128" y1="28" x2="128" y2="45"/>
+    <!-- 3 o'clock -->
+    <line x1="228" y1="128" x2="211" y2="128"/>
+    <!-- 6 o'clock -->
+    <line x1="128" y1="228" x2="128" y2="211"/>
+    <!-- 9 o'clock -->
+    <line x1="28" y1="128" x2="45" y2="128"/>
+  </g>
+  
+  <!-- Clock hands showing 10:10 -->
+  <g stroke="#00ff88" stroke-width="4" stroke-linecap="round" filter="url(#glow)">
+    <!-- Hour hand -->
+    <line x1="128" y1="128" x2="158" y2="78"/>
+    <!-- Minute hand -->
+    <line x1="128" y1="128" x2="98" y2="58"/>
+  </g>
+  
+  <!-- Center dot -->
+  <circle cx="128" cy="128" r="6" fill="#00ff88" filter="url(#glow)"/>
+  
+</svg>

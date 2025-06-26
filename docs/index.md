@@ -2,6 +2,10 @@
 layout: default
 ---
 
+<p align="center">
+  <img src="assets/icon/hud_clock_icon_small.svg" alt="HudClock Icon" width="128" height="128" style="filter: drop-shadow(0 0 10px #00ff88);">
+</p>
+
 # HudClock: Your Time, Always in View
 
 [Download](download.md) | [GitHub](https://github.com/lionfire/hudclock)

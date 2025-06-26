@@ -7,6 +7,41 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    
+    <!-- Application Info -->
+    <AssemblyName>HudClock</AssemblyName>
+    <ApplicationIcon>HudClock.ico</ApplicationIcon>
+    <Product>HudClock</Product>
+    <Company>LionFire</Company>
+    <Copyright>Copyright © 2025 LionFire</Copyright>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    
+    <!-- Publishing Settings -->
+    <PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
+
+  <!-- Single-file publishing configuration -->
+  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+  
+  <!-- Trimming configuration for self-contained builds -->
+  <PropertyGroup Condition="'$(SelfContained)' == 'true'">
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+  
+  <!-- Preserve WPF assemblies from trimming -->
+  <ItemGroup Condition="'$(SelfContained)' == 'true'">
+    <TrimmerRootAssembly Include="WindowsBase" />
+    <TrimmerRootAssembly Include="PresentationCore" />
+    <TrimmerRootAssembly Include="PresentationFramework" />
+  </ItemGroup>
 
 </Project>

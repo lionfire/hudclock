@@ -1,6 +1,12 @@
 # HudClock
 
-A transparent, always-on-top clock overlay for Windows that provides unique time visualization options including 24-hour analog, metric time, and minimalist designs.
+<p align="center">
+  <img src="assets/icon/hud_clock_icon_small.svg" alt="HudClock Icon" width="128" height="128">
+</p>
+
+<p align="center">
+  A transparent, always-on-top clock overlay for Windows that provides unique time visualization options including 24-hour analog, metric time, and minimalist designs.
+</p>
 
 ## Overview
 

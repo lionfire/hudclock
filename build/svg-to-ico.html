@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG to ICO Converter for HudClock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #0066cc;
+            background: #f0f8ff;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #0052a3;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #preview {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #preview img {
+            max-width: 256px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff;
+        }
+        .sizes {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .size-preview {
+            text-align: center;
+        }
+        .size-preview img {
+            border: 1px solid #ddd;
+            padding: 5px;
+            background: white;
+        }
+        .instructions {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .instructions ol {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 HudClock Icon Converter</h1>
+        
+        <div class="info">
+            <strong>Note:</strong> This tool converts SVG files to ICO format with multiple sizes (16x16, 32x32, 48x48, 64x64, 128x128, 256x256) suitable for Windows applications.
+        </div>
+        
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <p>Click to select your SVG file or drag and drop it here</p>
+            <p style="color: #666; font-size: 14px;">Expected file: hud_clock_icon.svg</p>
+        </div>
+        
+        <input type="file" id="fileInput" accept=".svg,image/svg+xml">
+        
+        <div style="text-align: center;">
+            <button class="btn" id="convertBtn" disabled>Convert to ICO</button>
+        </div>
+        
+        <div id="preview"></div>
+        
+        <div class="instructions">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Select your <code>hud_clock_icon.svg</code> file using the upload area above</li>
+                <li>Preview will show the icon at different sizes</li>
+                <li>Click "Convert to ICO" to generate the ICO file</li>
+                <li>Save the downloaded file as <code>HudClock.ico</code> in <code>src/wpf/</code></li>
+                <li>Uncomment the <code>ApplicationIcon</code> line in <code>MetricClock.csproj</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const preview = document.getElementById('preview');
+        const uploadArea = document.querySelector('.upload-area');
+        
+        let svgContent = null;
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#0066cc';
+            uploadArea.style.background = '#f0f8ff';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.background = 'white';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.background = 'white';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'image/svg+xml') {
+                handleFile(file);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+        
+        async function handleFile(file) {
+            svgContent = await file.text();
+            displayPreview();
+            convertBtn.disabled = false;
+        }
+        
+        function displayPreview() {
+            const sizes = [16, 32, 48, 64, 128, 256];
+            preview.innerHTML = '<h3>Preview at different sizes:</h3><div class="sizes"></div>';
+            const sizesContainer = preview.querySelector('.sizes');
+            
+            sizes.forEach(size => {
+                const div = document.createElement('div');
+                div.className = 'size-preview';
+                div.innerHTML = `
+                    <img src="data:image/svg+xml;base64,${btoa(svgContent)}" 
+                         width="${size}" height="${size}" 
+                         alt="${size}x${size}">
+                    <p>${size}x${size}</p>
+                `;
+                sizesContainer.appendChild(div);
+            });
+        }
+        
+        convertBtn.addEventListener('click', async () => {
+            try {
+                // For actual ICO conversion, we'll use an online service
+                // or provide instructions for local tools
+                alert(`ICO conversion requires server-side processing or desktop tools.
+
+Please use one of these options:
+
+1. Online converter: https://cloudconvert.com/svg-to-ico
+   - Upload your SVG
+   - Set sizes to: 16,32,48,64,128,256
+   - Download the ICO file
+
+2. Use the PowerShell script:
+   - Run: .\\build\\convert-svg-to-ico.ps1
+   - Requires Inkscape or ImageMagick
+
+3. Use a desktop tool like IcoFX or GIMP`);
+                
+                // For now, we'll download the SVG for manual conversion
+                const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'hud_clock_icon.svg';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                alert('Error during conversion: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,6 +3,10 @@ layout: default
 title: Download HudClock
 ---
 
+<p align="center">
+  <img src="assets/icon/hud_clock_icon_small.svg" alt="HudClock Icon" width="64" height="64" style="opacity: 0.8;">
+</p>
+
 # Download HudClock
 
 ## Latest Release

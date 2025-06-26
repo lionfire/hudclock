@@ -1,0 +1,130 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Glowing effects -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Inner glow for digital elements -->
+    <filter id="innerGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Gradient for background -->
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f1a;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- HUD green gradient -->
+    <linearGradient id="hudGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00cc66;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" fill="url(#bgGradient)" rx="32"/>
+  
+  <!-- Outer HUD grid -->
+  <g stroke="#00ff88" stroke-width="1" fill="none" opacity="0.3">
+    <!-- Corner brackets -->
+    <path d="M40 60 L40 40 L60 40"/>
+    <path d="M196 40 L216 40 L216 60"/>
+    <path d="M216 196 L216 216 L196 216"/>
+    <path d="M60 216 L40 216 L40 196"/>
+    
+    <!-- Grid lines -->
+    <line x1="128" y1="32" x2="128" y2="56"/>
+    <line x1="128" y1="200" x2="128" y2="224"/>
+    <line x1="32" y1="128" x2="56" y2="128"/>
+    <line x1="200" y1="128" x2="224" y2="128"/>
+  </g>
+  
+  <!-- Main clock circle -->
+  <circle cx="128" cy="128" r="80" 
+          stroke="url(#hudGreen)" 
+          stroke-width="3" 
+          fill="none" 
+          filter="url(#glow)"
+          opacity="0.9"/>
+  
+  <!-- Inner clock circle -->
+  <circle cx="128" cy="128" r="65" 
+          stroke="#00ff88" 
+          stroke-width="1" 
+          fill="none" 
+          opacity="0.4"/>
+  
+  <!-- HUD crosshairs -->
+  <g stroke="#00ff88" stroke-width="1" opacity="0.6">
+    <line x1="128" y1="48" x2="128" y2="68"/>
+    <line x1="128" y1="188" x2="128" y2="208"/>
+    <line x1="48" y1="128" x2="68" y2="128"/>
+    <line x1="188" y1="128" x2="208" y2="128"/>
+  </g>
+  
+  <!-- Hour markers -->
+  <g stroke="url(#hudGreen)" stroke-width="2" filter="url(#innerGlow)">
+    <!-- 12 o'clock -->
+    <line x1="128" y1="58" x2="128" y2="68" stroke-width="3"/>
+    <!-- 3 o'clock -->
+    <line x1="198" y1="128" x2="188" y2="128" stroke-width="3"/>
+    <!-- 6 o'clock -->
+    <line x1="128" y1="198" x2="128" y2="188" stroke-width="3"/>
+    <!-- 9 o'clock -->
+    <line x1="58" y1="128" x2="68" y2="128" stroke-width="3"/>
+    
+    <!-- Other hour markers -->
+    <line x1="178.5" y1="78.5" x2="174" y2="82"/>
+    <line x1="178.5" y1="177.5" x2="174" y2="174"/>
+    <line x1="77.5" y1="177.5" x2="82" y2="174"/>
+    <line x1="77.5" y1="78.5" x2="82" y2="82"/>
+  </g>
+  
+  <!-- Clock hands showing approximately 10:10 -->
+  <g stroke="url(#hudGreen)" stroke-width="3" fill="none" filter="url(#glow)" stroke-linecap="round">
+    <!-- Hour hand -->
+    <line x1="128" y1="128" x2="148" y2="98"/>
+    <!-- Minute hand -->
+    <line x1="128" y1="128" x2="108" y2="88"/>
+  </g>
+  
+  <!-- Center dot -->
+  <circle cx="128" cy="128" r="4" fill="url(#hudGreen)" filter="url(#glow)"/>
+  
+  <!-- Digital time display -->
+  <rect x="98" y="158" width="60" height="16" 
+        fill="#0a0a0a" 
+        stroke="#00ff88" 
+        stroke-width="1" 
+        opacity="0.8" 
+        rx="2"/>
+  <text x="128" y="169" 
+        text-anchor="middle" 
+        font-family="monospace" 
+        font-size="10" 
+        fill="#00ff88" 
+        filter="url(#innerGlow)">10:10</text>
+  
+  <!-- HUD-style corner elements -->
+  <g stroke="#00ff88" stroke-width="1" fill="none" opacity="0.5">
+    <path d="M80 80 L85 80 L85 85"/>
+    <path d="M176 80 L171 80 L171 85"/>
+    <path d="M176 176 L171 176 L171 171"/>
+    <path d="M80 176 L85 176 L85 171"/>
+  </g>
+  
+  <!-- Small HUD indicators -->
+  <circle cx="195" cy="60" r="2" fill="#00ff88" opacity="0.8"/>
+  <circle cx="60" cy="195" r="2" fill="#00ff88" opacity="0.8"/>
+  
+</svg>

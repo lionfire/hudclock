@@ -1,0 +1,139 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore src/wpf/MetricClock.csproj
+      
+    - name: Build
+      run: dotnet build src/wpf/MetricClock.csproj --configuration Release --no-restore
+      
+    # Create different build outputs
+    - name: Create Build Outputs
+      run: |
+        # Create output directories
+        New-Item -ItemType Directory -Force -Path artifacts
+        
+        # 1. Framework-dependent single file
+        Write-Host "Building framework-dependent single-file executable..."
+        dotnet publish src/wpf/MetricClock.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --no-self-contained `
+          --output artifacts/framework-dependent `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:EnableCompressionInSingleFile=true
+          
+        # 2. Self-contained single file
+        Write-Host "Building self-contained single-file executable..."
+        dotnet publish src/wpf/MetricClock.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          --output artifacts/self-contained `
+          -p:PublishSingleFile=true `
+          -p:PublishTrimmed=false `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:EnableCompressionInSingleFile=true
+          
+        # 3. Portable build (multiple files)
+        Write-Host "Building portable version..."
+        dotnet publish src/wpf/MetricClock.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --no-self-contained `
+          --output artifacts/portable
+          
+        # Create zip files
+        Write-Host "Creating archives..."
+        Compress-Archive -Path artifacts/framework-dependent/* -DestinationPath artifacts/HudClock-win-x64-framework-dependent.zip
+        Compress-Archive -Path artifacts/self-contained/* -DestinationPath artifacts/HudClock-win-x64-self-contained.zip
+        Compress-Archive -Path artifacts/portable/* -DestinationPath artifacts/HudClock-win-x64-portable.zip
+        
+        # Clean up directories, keep only zips
+        Remove-Item -Recurse -Force artifacts/framework-dependent
+        Remove-Item -Recurse -Force artifacts/self-contained
+        Remove-Item -Recurse -Force artifacts/portable
+        
+    # Upload artifacts
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: hudclock-builds
+        path: artifacts/*.zip
+        
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hudclock-builds
+        path: artifacts
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: HudClock ${{ github.ref }}
+        draft: false
+        prerelease: false
+        body: |
+          ## Download Options
+          
+          ### 🚀 Recommended: Self-Contained Version
+          **[HudClock-win-x64-self-contained.zip]** - Single executable file that includes everything needed to run. No installation or .NET runtime required. Just download, extract, and run!
+          
+          ### 📦 Other Options
+          - **[HudClock-win-x64-framework-dependent.zip]** - Smaller single executable (requires .NET 8 Desktop Runtime)
+          - **[HudClock-win-x64-portable.zip]** - Traditional portable app with multiple files
+          
+          ## System Requirements
+          - Windows 10 or later (64-bit)
+          - .NET 8 Desktop Runtime (only for framework-dependent version)
+          
+          ## Installation
+          1. Download your preferred version
+          2. Extract the ZIP file to any location
+          3. Run `HudClock.exe`
+          4. (Optional) Create a shortcut for easy access
+          
+          ## What's New
+          See [commits](https://github.com/lionfire/hudclock/commits/${{ github.ref }}) for details.
+        
+    - name: Upload Release Assets
+      run: |
+        for file in artifacts/*.zip; do
+          asset_name=$(basename "$file")
+          echo "Uploading $asset_name..."
+          gh release upload "${{ github.ref_name }}" "$file" --clobber
+        done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
