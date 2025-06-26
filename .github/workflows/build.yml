@@ -151,13 +151,18 @@ jobs:
         name: hudclock-portable
         path: scan-artifacts
         
+    - name: Rate limit delay
+      run: |
+        echo "Waiting 15 seconds to avoid VirusTotal rate limits..."
+        sleep 15
+        
     - name: VirusTotal Scan
       uses: crazy-max/ghaction-virustotal@v4
       id: virustotal
       with:
         vt_api_key: ${{ secrets.VT_API_KEY }}
         files: |
-          scan-artifacts/*.zip
+          scan-artifacts/HudClock-win-x64-portable.zip
         
     - name: Generate scan results
       if: steps.virustotal.outputs.analysis != ''
