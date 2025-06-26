@@ -205,6 +205,9 @@ namespace MetricClock
             MinuteHand.StrokeThickness = 4 * elementScale;
             SecondHand.StrokeThickness = 2 * elementScale;
             
+            // Apply colors from settings
+            ApplyColorsFromSettings();
+            
             // Update center dot visibility based on settings and whether hands are visible
             bool handsVisible = (style == AnalogClockStyle.Traditional || style == AnalogClockStyle.CirclesWithHands);
             if (CenterDot != null)
@@ -222,7 +225,7 @@ namespace MetricClock
                     {
                         Width = 20 * elementScale,
                         Height = 20 * elementScale,
-                        Fill = System.Windows.Media.Brushes.White,
+                        Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.HourHandFillColor)),
                         Opacity = 1.0  // Moving circles stay at full opacity
                     };
                     ClockCanvas.Children.Add(hourCircle);
@@ -231,7 +234,7 @@ namespace MetricClock
                     {
                         Width = 16 * elementScale,
                         Height = 16 * elementScale,
-                        Fill = System.Windows.Media.Brushes.White,
+                        Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.MinuteHandFillColor)),
                         Opacity = 1.0  // Moving circles stay at full opacity
                     };
                     ClockCanvas.Children.Add(minuteCircle);
@@ -240,7 +243,7 @@ namespace MetricClock
                     {
                         Width = 12 * elementScale,
                         Height = 12 * elementScale,
-                        Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 68, 68)),
+                        Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.SecondHandFillColor)),
                         Opacity = 1.0  // Moving circles stay at full opacity
                     };
                     ClockCanvas.Children.Add(secondCircle);
@@ -251,7 +254,7 @@ namespace MetricClock
                         hourNumber = new TextBlock
                         {
                             Text = "",
-                            Foreground = System.Windows.Media.Brushes.Black,
+                            Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.HourTextColor)),
                             FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                             FontSize = ClockSettings.Instance.AnalogFontSize * elementScale,
                             FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
@@ -264,7 +267,7 @@ namespace MetricClock
                         minuteNumber = new TextBlock
                         {
                             Text = "",
-                            Foreground = System.Windows.Media.Brushes.Black,
+                            Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.MinuteTextColor)),
                             FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                             FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9,
                             FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
@@ -277,7 +280,7 @@ namespace MetricClock
                         secondNumber = new TextBlock
                         {
                             Text = "",
-                            Foreground = System.Windows.Media.Brushes.Black,
+                            Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.SecondTextColor)),
                             FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
                             FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8,
                             FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
@@ -902,6 +905,79 @@ namespace MetricClock
             }
             
             return new System.Windows.Point(x, y);
+        }
+        
+        private void ApplyColorsFromSettings()
+        {
+            var settings = ClockSettings.Instance;
+            
+            // Apply hand colors
+            try
+            {
+                HourHand.Stroke = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.HourHandStrokeColor));
+                MinuteHand.Stroke = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.MinuteHandStrokeColor));
+                SecondHand.Stroke = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.SecondHandStrokeColor));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying hand colors: {ex.Message}");
+            }
+            
+            // Apply circle colors if they exist
+            if (hourCircle != null)
+            {
+                try
+                {
+                    hourCircle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.HourHandFillColor));
+                }
+                catch { }
+            }
+            
+            if (minuteCircle != null)
+            {
+                try
+                {
+                    minuteCircle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.MinuteHandFillColor));
+                }
+                catch { }
+            }
+            
+            if (secondCircle != null)
+            {
+                try
+                {
+                    secondCircle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.SecondHandFillColor));
+                }
+                catch { }
+            }
+            
+            // Apply text colors if they exist
+            if (hourNumber != null)
+            {
+                try
+                {
+                    hourNumber.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.HourTextColor));
+                }
+                catch { }
+            }
+            
+            if (minuteNumber != null)
+            {
+                try
+                {
+                    minuteNumber.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.MinuteTextColor));
+                }
+                catch { }
+            }
+            
+            if (secondNumber != null)
+            {
+                try
+                {
+                    secondNumber.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.SecondTextColor));
+                }
+                catch { }
+            }
         }
     }
 }

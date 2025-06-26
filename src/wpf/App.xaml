@@ -7,6 +7,8 @@
         <ResourceDictionary>
             <local:EnumBooleanConverter x:Key="EnumBooleanConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <local:ColorToHexConverter x:Key="ColorToHexConverter"/>
+            <local:StringToColorConverter x:Key="StringToColorConverter"/>
             <Style x:Key="TransparentButton" TargetType="Button">
                 <Setter Property="Background" Value="#33000000"/>
                 <Setter Property="Foreground" Value="White"/>

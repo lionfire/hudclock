@@ -50,6 +50,17 @@ namespace MetricClock
         private string _analogFontWeight = "Normal";
         private bool _runAtStartup = false;
         private bool _isClickThrough = false;
+        
+        // Analog clock color settings
+        private string _hourHandStrokeColor = "#FF000000";
+        private string _hourHandFillColor = "#FF000000";
+        private string _hourTextColor = "#FF000000";
+        private string _minuteHandStrokeColor = "#FF000000";
+        private string _minuteHandFillColor = "#FF000000";
+        private string _minuteTextColor = "#FF000000";
+        private string _secondHandStrokeColor = "#FFFF0000";
+        private string _secondHandFillColor = "#FFFF0000";
+        private string _secondTextColor = "#FF000000";
 
         public double Opacity
         {
@@ -520,6 +531,124 @@ namespace MetricClock
             }
         }
 
+        // Analog Clock Color Properties
+        public string HourHandStrokeColor
+        {
+            get => _hourHandStrokeColor;
+            set
+            {
+                if (_hourHandStrokeColor != value)
+                {
+                    _hourHandStrokeColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string HourHandFillColor
+        {
+            get => _hourHandFillColor;
+            set
+            {
+                if (_hourHandFillColor != value)
+                {
+                    _hourHandFillColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string HourTextColor
+        {
+            get => _hourTextColor;
+            set
+            {
+                if (_hourTextColor != value)
+                {
+                    _hourTextColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string MinuteHandStrokeColor
+        {
+            get => _minuteHandStrokeColor;
+            set
+            {
+                if (_minuteHandStrokeColor != value)
+                {
+                    _minuteHandStrokeColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string MinuteHandFillColor
+        {
+            get => _minuteHandFillColor;
+            set
+            {
+                if (_minuteHandFillColor != value)
+                {
+                    _minuteHandFillColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string MinuteTextColor
+        {
+            get => _minuteTextColor;
+            set
+            {
+                if (_minuteTextColor != value)
+                {
+                    _minuteTextColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string SecondHandStrokeColor
+        {
+            get => _secondHandStrokeColor;
+            set
+            {
+                if (_secondHandStrokeColor != value)
+                {
+                    _secondHandStrokeColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string SecondHandFillColor
+        {
+            get => _secondHandFillColor;
+            set
+            {
+                if (_secondHandFillColor != value)
+                {
+                    _secondHandFillColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string SecondTextColor
+        {
+            get => _secondTextColor;
+            set
+            {
+                if (_secondTextColor != value)
+                {
+                    _secondTextColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         // Helper property to get the effective clock type
         public ClockType GetEffectiveClockType()
         {
@@ -608,7 +737,17 @@ namespace MetricClock
                     AnalogFontSize = _analogFontSize,
                     AnalogFontWeight = _analogFontWeight,
                     RunAtStartup = _runAtStartup,
-                    IsClickThrough = _isClickThrough
+                    IsClickThrough = _isClickThrough,
+                    // Analog clock colors
+                    HourHandStrokeColor = _hourHandStrokeColor,
+                    HourHandFillColor = _hourHandFillColor,
+                    HourTextColor = _hourTextColor,
+                    MinuteHandStrokeColor = _minuteHandStrokeColor,
+                    MinuteHandFillColor = _minuteHandFillColor,
+                    MinuteTextColor = _minuteTextColor,
+                    SecondHandStrokeColor = _secondHandStrokeColor,
+                    SecondHandFillColor = _secondHandFillColor,
+                    SecondTextColor = _secondTextColor
                 };
                 
                 var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
@@ -743,6 +882,34 @@ namespace MetricClock
                     
                     if (root.TryGetProperty("IsClickThrough", out var isClickThroughElement))
                         _isClickThrough = isClickThroughElement.GetBoolean();
+                    
+                    // Load analog clock colors
+                    if (root.TryGetProperty("HourHandStrokeColor", out var hourHandStrokeElement))
+                        HourHandStrokeColor = hourHandStrokeElement.GetString() ?? "#FF000000";
+                    
+                    if (root.TryGetProperty("HourHandFillColor", out var hourHandFillElement))
+                        HourHandFillColor = hourHandFillElement.GetString() ?? "#FF000000";
+                    
+                    if (root.TryGetProperty("HourTextColor", out var hourTextElement))
+                        HourTextColor = hourTextElement.GetString() ?? "#FF000000";
+                    
+                    if (root.TryGetProperty("MinuteHandStrokeColor", out var minuteHandStrokeElement))
+                        MinuteHandStrokeColor = minuteHandStrokeElement.GetString() ?? "#FF000000";
+                    
+                    if (root.TryGetProperty("MinuteHandFillColor", out var minuteHandFillElement))
+                        MinuteHandFillColor = minuteHandFillElement.GetString() ?? "#FF000000";
+                    
+                    if (root.TryGetProperty("MinuteTextColor", out var minuteTextElement))
+                        MinuteTextColor = minuteTextElement.GetString() ?? "#FF000000";
+                    
+                    if (root.TryGetProperty("SecondHandStrokeColor", out var secondHandStrokeElement))
+                        SecondHandStrokeColor = secondHandStrokeElement.GetString() ?? "#FFFF0000";
+                    
+                    if (root.TryGetProperty("SecondHandFillColor", out var secondHandFillElement))
+                        SecondHandFillColor = secondHandFillElement.GetString() ?? "#FFFF0000";
+                    
+                    if (root.TryGetProperty("SecondTextColor", out var secondTextElement))
+                        SecondTextColor = secondTextElement.GetString() ?? "#FF000000";
                 }
                 
                 // Always check the actual registry status
