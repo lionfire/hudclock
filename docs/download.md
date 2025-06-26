@@ -3,15 +3,28 @@ layout: default
 title: Download HudClock
 ---
 
-<p align="center">
-  <img src="assets/icon/hud_clock_icon_small.svg" alt="HudClock Icon" width="64" height="64" style="opacity: 0.8;">
-</p>
-
 # Download HudClock
 
-## Latest Release
+<div class="download-option">
+  <h3>🚀 Windows Installer (Recommended)</h3>
+  <p><strong>HudClock-Setup.exe</strong> - Easy installation with Start Menu shortcuts</p>
+  <p>✅ Automatic updates | ✅ Uninstaller included | ✅ Desktop shortcut option</p>
+  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Installer</a>
+</div>
 
-Download the latest version of HudClock from our [GitHub Releases page](https://github.com/lionfire/hudclock/releases).
+<div class="download-option">
+  <h3>📦 Portable Version</h3>
+  <p><strong>HudClock-win-x64-self-contained.zip</strong> - No installation required</p>
+  <p>✅ Single executable | ✅ No admin rights needed | ✅ Includes .NET runtime</p>
+  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Portable</a>
+</div>
+
+<div class="download-option">
+  <h3>⚡ Lightweight Version</h3>
+  <p><strong>HudClock-win-x64-framework-dependent.zip</strong> - Smallest download</p>
+  <p>⚠️ Requires .NET 8 Desktop Runtime | ✅ Only 5MB | ✅ Fast startup</p>
+  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Lightweight</a>
+</div>
 
 ## System Requirements
 

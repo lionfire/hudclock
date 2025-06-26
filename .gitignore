@@ -407,3 +407,5 @@ FodyWeavers.xsd
 
 # Claude Code settings
 settings.local.json
+
+/dist

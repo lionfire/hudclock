@@ -1,7 +1,9 @@
 # GitHub Pages Jekyll configuration
 title: HudClock
 description: A transparent, always-on-top clock overlay for Windows
-theme: jekyll-theme-cayman
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+  - jekyll-remote-theme
 show_downloads: true
 google_analytics: # Add your Google Analytics tracking ID if desired
 
@@ -11,5 +13,8 @@ markdown: kramdown
 # Theme-specific settings
 github:
   repository_url: https://github.com/lionfire/hudclock
+  repository_name: hudclock
+  owner_url: https://github.com/lionfire
+  owner_name: lionfire
   zip_url: https://github.com/lionfire/hudclock/zipball/main
   tar_url: https://github.com/lionfire/hudclock/tarball/main

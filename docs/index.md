@@ -1,14 +1,16 @@
 ---
 layout: default
+title: HudClock - Transparent Clock Overlay for Windows
 ---
 
 <p align="center">
-  <img src="assets/icon/hud_clock_icon_small.svg" alt="HudClock Icon" width="128" height="128" style="filter: drop-shadow(0 0 10px #00ff88);">
+  <img src="assets/icon/hud_clock_icon_small.svg" alt="HudClock Icon" width="200" height="200" style="filter: drop-shadow(0 0 20px rgba(0,255,136,0.5));">
 </p>
 
-# HudClock: Your Time, Always in View
-
-[Download](download.md) | [GitHub](https://github.com/lionfire/hudclock)
+<p align="center" style="margin: 2rem 0;">
+  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Latest Release</a>
+  <a href="https://github.com/lionfire/hudclock" class="btn">View on GitHub</a>
+</p>
 
 ## See Time Differently
 
@@ -16,20 +18,34 @@ HudClock transforms how you perceive time throughout your day. This elegant, tra
 
 ## Why HudClock?
 
-### 🕐 **Unique Time Perspectives**
-- **24-Hour Analog Clock**: Watch the entire day unfold on a single clock face
-- **Metric Time**: Experience time in base-10 with 10-hour days
-- **Traditional Formats**: Classic 12-hour analog and digital displays
-
-### 👁️ **Always Present, Never Intrusive**
-- Ultra-transparent design blends seamlessly with your desktop
-- Click-through mode lets you work right through the clock
-- Adjustable opacity from barely visible to fully opaque
-
-### 🎯 **Designed for Focus**
-- See at a glance how much of your day has progressed
-- Watch minutes tick by with smooth, continuous movement
-- Stay aware of time without checking your taskbar
+<div class="feature-grid">
+  <div class="feature">
+    <h3>🕐 Unique Time Perspectives</h3>
+    <ul>
+      <li><strong>24-Hour Analog Clock</strong>: Watch the entire day unfold on a single clock face</li>
+      <li><strong>Metric Time</strong>: Experience time in base-10 with 10-hour days</li>
+      <li><strong>Traditional Formats</strong>: Classic 12-hour analog and digital displays</li>
+    </ul>
+  </div>
+  
+  <div class="feature">
+    <h3>👁️ Always Present, Never Intrusive</h3>
+    <ul>
+      <li>Ultra-transparent design blends seamlessly with your desktop</li>
+      <li>Click-through mode lets you work right through the clock</li>
+      <li>Adjustable opacity from barely visible to fully opaque</li>
+    </ul>
+  </div>
+  
+  <div class="feature">
+    <h3>🎯 Designed for Focus</h3>
+    <ul>
+      <li>See at a glance how much of your day has progressed</li>
+      <li>Watch minutes tick by with smooth, continuous movement</li>
+      <li>Stay aware of time without checking your taskbar</li>
+    </ul>
+  </div>
+</div>
 
 ## Key Features
 
