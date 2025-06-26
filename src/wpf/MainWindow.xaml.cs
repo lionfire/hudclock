@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using System.Windows.Media;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace MetricClock
 {
@@ -15,6 +16,7 @@ namespace MetricClock
         private bool isClickThrough = false;
         private HwndSource? hwndSource;
         private System.Windows.Forms.NotifyIcon? trayIcon;
+        private System.Windows.Forms.Timer? singleClickTimer;
 
         [DllImport("user32.dll")]
         static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
@@ -57,6 +59,14 @@ namespace MetricClock
             // Set initial taskbar visibility
             ShowInTaskbar = !ClockSettings.Instance.HideFromTaskbarNormal;
             
+            // Restore click-through state
+            isClickThrough = ClockSettings.Instance.IsClickThrough;
+            if (isClickThrough)
+            {
+                // SetClickThrough will be called after the window is loaded
+                Loaded += (s, e) => SetClickThrough(isClickThrough);
+            }
+            
             // Handle title bar opacity slider changes
             TitleBarOpacitySlider.ValueChanged += (s, e) =>
             {
@@ -81,10 +91,17 @@ namespace MetricClock
         
         private void RestoreWindowPosition()
         {
-            Left = ClockSettings.Instance.WindowLeft;
-            Top = ClockSettings.Instance.WindowTop;
-            Width = ClockSettings.Instance.WindowWidth;
-            Height = ClockSettings.Instance.WindowHeight;
+            if (ClockSettings.Instance.WindowMaximized)
+            {
+                WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                Left = ClockSettings.Instance.WindowLeft;
+                Top = ClockSettings.Instance.WindowTop;
+                Width = ClockSettings.Instance.WindowWidth;
+                Height = ClockSettings.Instance.WindowHeight;
+            }
         }
         
         private void InitializeResizeGrip()
@@ -221,12 +238,13 @@ namespace MetricClock
         {
             trayIcon = new System.Windows.Forms.NotifyIcon
             {
-                Icon = CreateClockIcon(),
+                Icon = LoadAppIcon(),
                 Text = "HudClock - Click to toggle click-through",
                 Visible = ClockSettings.Instance.ShowTrayIconNormal
             };
             
             trayIcon.MouseClick += TrayIcon_MouseClick;
+            trayIcon.MouseDoubleClick += TrayIcon_MouseDoubleClick;
             
             var contextMenu = new System.Windows.Forms.ContextMenuStrip();
             contextMenu.Items.Add("Settings", null, (s, e) => Settings_Click(s!, new RoutedEventArgs()));
@@ -235,8 +253,41 @@ namespace MetricClock
             trayIcon.ContextMenuStrip = contextMenu;
         }
         
-        private Icon CreateClockIcon()
+        private Icon LoadAppIcon()
         {
+            try
+            {
+                // Try to extract icon from the current executable
+                var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+                if (!string.IsNullOrEmpty(exePath) && File.Exists(exePath))
+                {
+                    var extractedIcon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
+                    if (extractedIcon != null)
+                    {
+                        return extractedIcon;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to extract icon from exe: {ex.Message}");
+            }
+            
+            try
+            {
+                // Try to load the app icon from resources
+                var iconStream = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/HudClock.ico"))?.Stream;
+                if (iconStream != null)
+                {
+                    return new Icon(iconStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load app icon from resources: {ex.Message}");
+            }
+            
+            // Fallback to creating a simple icon
             var bitmap = new Bitmap(16, 16);
             using (var g = Graphics.FromImage(bitmap))
             {
@@ -252,9 +303,38 @@ namespace MetricClock
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                isClickThrough = !isClickThrough;
-                SetClickThrough(isClickThrough);
+                // Start a timer to detect if this is a single click or part of a double-click
+                if (singleClickTimer == null)
+                {
+                    singleClickTimer = new System.Windows.Forms.Timer();
+                    singleClickTimer.Interval = System.Windows.Forms.SystemInformation.DoubleClickTime;
+                    singleClickTimer.Tick += (s, args) =>
+                    {
+                        singleClickTimer.Stop();
+                        singleClickTimer.Dispose();
+                        singleClickTimer = null;
+                        
+                        // This is a single click - toggle click-through
+                        isClickThrough = !isClickThrough;
+                        SetClickThrough(isClickThrough);
+                    };
+                }
+                singleClickTimer.Start();
             }
+        }
+        
+        private void TrayIcon_MouseDoubleClick(object? sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            // Cancel the single click timer
+            if (singleClickTimer != null)
+            {
+                singleClickTimer.Stop();
+                singleClickTimer.Dispose();
+                singleClickTimer = null;
+            }
+            
+            // Open settings on double-click
+            Settings_Click(this, new RoutedEventArgs());
         }
 
         private void SetClickThrough(bool clickThrough)
@@ -295,6 +375,10 @@ namespace MetricClock
             // Apply both opacity settings
             UpdateWindowOpacity();
             UpdateBackdropOpacity();
+            
+            // Save the click-through state
+            ClockSettings.Instance.IsClickThrough = clickThrough;
+            ClockSettings.Instance.SaveSettings();
         }
 
         public void UpdateWindowOpacity()
@@ -446,6 +530,13 @@ namespace MetricClock
                 SaveWindowPosition();
             }
         }
+        
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+            ClockSettings.Instance.WindowMaximized = (WindowState == WindowState.Maximized);
+            ClockSettings.Instance.SaveSettings();
+        }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -474,6 +565,12 @@ namespace MetricClock
             if (trayIcon != null)
             {
                 trayIcon.Dispose();
+            }
+            
+            if (singleClickTimer != null)
+            {
+                singleClickTimer.Stop();
+                singleClickTimer.Dispose();
             }
             
             ClockSettings.Instance.PropertyChanged -= Settings_PropertyChanged;

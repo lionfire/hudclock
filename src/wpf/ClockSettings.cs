@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Text.Json;
+using Microsoft.Win32;
 
 namespace MetricClock
 {
@@ -38,11 +39,17 @@ namespace MetricClock
         private double _windowTop = 100;
         private double _windowWidth = 350;
         private double _windowHeight = 350;
+        private bool _windowMaximized = false;
         private double _elementScale = 1.0;
         private int _updatesPerSecond = 60;
         private string _digitalFontFamily = "Segoe UI";
         private double _digitalFontSize = 48;
         private string _digitalFontWeight = "Normal";
+        private string _analogFontFamily = "Segoe UI";
+        private double _analogFontSize = 14;
+        private string _analogFontWeight = "Normal";
+        private bool _runAtStartup = false;
+        private bool _isClickThrough = false;
 
         public double Opacity
         {
@@ -369,6 +376,19 @@ namespace MetricClock
             }
         }
 
+        public bool WindowMaximized
+        {
+            get => _windowMaximized;
+            set
+            {
+                if (_windowMaximized != value)
+                {
+                    _windowMaximized = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public double ElementScale
         {
             get => _elementScale;
@@ -429,6 +449,72 @@ namespace MetricClock
                 if (_digitalFontWeight != value)
                 {
                     _digitalFontWeight = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string AnalogFontFamily
+        {
+            get => _analogFontFamily;
+            set
+            {
+                if (_analogFontFamily != value)
+                {
+                    _analogFontFamily = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double AnalogFontSize
+        {
+            get => _analogFontSize;
+            set
+            {
+                if (_analogFontSize != value)
+                {
+                    _analogFontSize = Math.Max(8, Math.Min(72, value)); // Clamp between 8 and 72
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string AnalogFontWeight
+        {
+            get => _analogFontWeight;
+            set
+            {
+                if (_analogFontWeight != value)
+                {
+                    _analogFontWeight = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool RunAtStartup
+        {
+            get => _runAtStartup;
+            set
+            {
+                if (_runAtStartup != value)
+                {
+                    _runAtStartup = value;
+                    OnPropertyChanged();
+                    UpdateStartupRegistry(value);
+                }
+            }
+        }
+
+        public bool IsClickThrough
+        {
+            get => _isClickThrough;
+            set
+            {
+                if (_isClickThrough != value)
+                {
+                    _isClickThrough = value;
                     OnPropertyChanged();
                 }
             }
@@ -507,6 +593,7 @@ namespace MetricClock
                     WindowTop = _windowTop,
                     WindowWidth = _windowWidth,
                     WindowHeight = _windowHeight,
+                    WindowMaximized = _windowMaximized,
                     HideFromTaskbarNormal = _hideFromTaskbarNormal,
                     HideFromTaskbarClickThrough = _hideFromTaskbarClickThrough,
                     ShowTrayIconNormal = _showTrayIconNormal,
@@ -516,7 +603,12 @@ namespace MetricClock
                     UpdatesPerSecond = _updatesPerSecond,
                     DigitalFontFamily = _digitalFontFamily,
                     DigitalFontSize = _digitalFontSize,
-                    DigitalFontWeight = _digitalFontWeight
+                    DigitalFontWeight = _digitalFontWeight,
+                    AnalogFontFamily = _analogFontFamily,
+                    AnalogFontSize = _analogFontSize,
+                    AnalogFontWeight = _analogFontWeight,
+                    RunAtStartup = _runAtStartup,
+                    IsClickThrough = _isClickThrough
                 };
                 
                 var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
@@ -604,6 +696,9 @@ namespace MetricClock
                     if (root.TryGetProperty("WindowHeight", out var windowHeightElement))
                         WindowHeight = windowHeightElement.GetDouble();
                     
+                    if (root.TryGetProperty("WindowMaximized", out var windowMaximizedElement))
+                        WindowMaximized = windowMaximizedElement.GetBoolean();
+                    
                     if (root.TryGetProperty("HideFromTaskbarNormal", out var hideTaskbarNormalElement))
                         HideFromTaskbarNormal = hideTaskbarNormalElement.GetBoolean();
                     
@@ -634,7 +729,24 @@ namespace MetricClock
                     if (root.TryGetProperty("DigitalFontWeight", out var digitalFontWeightElement))
                         DigitalFontWeight = digitalFontWeightElement.GetString() ?? "Normal";
                     
+                    if (root.TryGetProperty("AnalogFontFamily", out var analogFontFamilyElement))
+                        AnalogFontFamily = analogFontFamilyElement.GetString() ?? "Segoe UI";
+                    
+                    if (root.TryGetProperty("AnalogFontSize", out var analogFontSizeElement))
+                        AnalogFontSize = analogFontSizeElement.GetDouble();
+                    
+                    if (root.TryGetProperty("AnalogFontWeight", out var analogFontWeightElement))
+                        AnalogFontWeight = analogFontWeightElement.GetString() ?? "Normal";
+                    
+                    if (root.TryGetProperty("RunAtStartup", out var runAtStartupElement))
+                        _runAtStartup = runAtStartupElement.GetBoolean();
+                    
+                    if (root.TryGetProperty("IsClickThrough", out var isClickThroughElement))
+                        _isClickThrough = isClickThroughElement.GetBoolean();
                 }
+                
+                // Always check the actual registry status
+                CheckStartupStatus();
             }
             catch (Exception ex)
             {
@@ -647,6 +759,52 @@ namespace MetricClock
                 _isLoading = false;
                 _isInitialized = true;
                 System.Diagnostics.Debug.WriteLine("Settings loaded and initialized");
+            }
+        }
+        
+        private void UpdateStartupRegistry(bool runAtStartup)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true) ?? throw new InvalidOperationException("Cannot open registry key"))
+                {
+                    if (runAtStartup)
+                    {
+                        string appPath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "";
+                        if (!string.IsNullOrEmpty(appPath))
+                        {
+                            key.SetValue("HudClock", $"\"{appPath}\"");
+                        }
+                    }
+                    else
+                    {
+                        key.DeleteValue("HudClock", false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating startup registry: {ex.Message}");
+            }
+        }
+        
+        public void CheckStartupStatus()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
+                {
+                    if (key != null)
+                    {
+                        var value = key.GetValue("HudClock");
+                        _runAtStartup = value != null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error checking startup registry: {ex.Message}");
+                _runAtStartup = false;
             }
         }
     }

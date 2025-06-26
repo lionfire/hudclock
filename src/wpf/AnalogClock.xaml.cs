@@ -252,9 +252,11 @@ namespace MetricClock
                         {
                             Text = "",
                             Foreground = System.Windows.Media.Brushes.Black,
-                            FontSize = 10 * elementScale,
-                            FontWeight = FontWeights.Bold,
+                            FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                            FontSize = ClockSettings.Instance.AnalogFontSize * elementScale,
+                            FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
                         };
                         ClockCanvas.Children.Add(hourNumber);
@@ -263,9 +265,11 @@ namespace MetricClock
                         {
                             Text = "",
                             Foreground = System.Windows.Media.Brushes.Black,
-                            FontSize = 9 * elementScale,
-                            FontWeight = FontWeights.Bold,
+                            FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                            FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9,
+                            FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
                         };
                         ClockCanvas.Children.Add(minuteNumber);
@@ -274,9 +278,11 @@ namespace MetricClock
                         {
                             Text = "",
                             Foreground = System.Windows.Media.Brushes.Black,
-                            FontSize = 8 * elementScale,
-                            FontWeight = FontWeights.Bold,
+                            FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                            FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8,
+                            FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
                         };
                         ClockCanvas.Children.Add(secondNumber);
@@ -306,9 +312,11 @@ namespace MetricClock
                             {
                                 Text = "",
                                 Foreground = System.Windows.Media.Brushes.Black,
-                                FontSize = 10 * elementScale,
-                                FontWeight = FontWeights.Bold,
+                                FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                                FontSize = ClockSettings.Instance.AnalogFontSize * elementScale,
+                                FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
                                 TextAlignment = TextAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
                                 Opacity = 1.0
                             };
                             ClockCanvas.Children.Add(hourNumber);
@@ -320,9 +328,11 @@ namespace MetricClock
                             {
                                 Text = "",
                                 Foreground = System.Windows.Media.Brushes.Black,
-                                FontSize = 9 * elementScale,
-                                FontWeight = FontWeights.Bold,
+                                FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                                FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9,
+                                FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
                                 TextAlignment = TextAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
                                 Opacity = 1.0
                             };
                             ClockCanvas.Children.Add(minuteNumber);
@@ -334,9 +344,11 @@ namespace MetricClock
                             {
                                 Text = "",
                                 Foreground = System.Windows.Media.Brushes.Black,
-                                FontSize = 8 * elementScale,
-                                FontWeight = FontWeights.Bold,
+                                FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                                FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8,
+                                FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight),
                                 TextAlignment = TextAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
                                 Opacity = 1.0
                             };
                             ClockCanvas.Children.Add(secondNumber);
@@ -351,9 +363,24 @@ namespace MetricClock
                     }
                     
                     // Update font sizes if numbers exist
-                    if (hourNumber != null) hourNumber.FontSize = 10 * elementScale;
-                    if (minuteNumber != null) minuteNumber.FontSize = 9 * elementScale;
-                    if (secondNumber != null) secondNumber.FontSize = 8 * elementScale;
+                    if (hourNumber != null) 
+                    {
+                        hourNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale;
+                        hourNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
+                        hourNumber.FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight);
+                    }
+                    if (minuteNumber != null) 
+                    {
+                        minuteNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9;
+                        minuteNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
+                        minuteNumber.FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight);
+                    }
+                    if (secondNumber != null) 
+                    {
+                        secondNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8;
+                        secondNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
+                        secondNumber.FontWeight = (FontWeight)new FontWeightConverter().ConvertFromString(ClockSettings.Instance.AnalogFontWeight);
+                    }
                 }
             }
             
@@ -519,7 +546,8 @@ namespace MetricClock
             
             double radians = angleDegrees * Math.PI / 180;
             
-            // Calculate position to center the text exactly at the circle position
+            // Calculate position to center the text exactly at the circle's center
+            // The radius here is the same as the circle's radius, so the text will be centered in the circle
             double x = centerX + radius * Math.Cos(radians) - textWidth / 2;
             double y = centerY + radius * Math.Sin(radians) - textHeight / 2;
             

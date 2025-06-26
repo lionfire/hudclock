@@ -44,4 +44,9 @@
     <TrimmerRootAssembly Include="PresentationFramework" />
   </ItemGroup>
 
+  <!-- Include icon as embedded resource -->
+  <ItemGroup>
+    <Resource Include="HudClock.ico" />
+  </ItemGroup>
+
 </Project>

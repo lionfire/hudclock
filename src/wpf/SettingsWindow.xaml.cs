@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Navigation;
+using System.Reflection;
 
 namespace MetricClock
 {
@@ -17,6 +18,17 @@ namespace MetricClock
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var settingsDir = System.IO.Path.Combine(appDataPath, "HudClock");
             SettingsPathText.Text = settingsDir;
+            
+            // Load version from assembly
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            if (version != null && VersionText != null)
+            {
+                var versionRun = VersionText.Inlines.OfType<System.Windows.Documents.Run>().Skip(1).FirstOrDefault();
+                if (versionRun != null)
+                {
+                    versionRun.Text = $"{version.Major}.{version.Minor}.{version.Build}";
+                }
+            }
         }
 
         private void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -83,6 +95,24 @@ namespace MetricClock
         }
         
         private void FontWeight_Changed(object sender, RoutedEventArgs e)
+        {
+            mainWindow?.RefreshCurrentClock();
+            ClockSettings.Instance.SaveSettings();
+        }
+        
+        private void AnalogFontFamily_Changed(object sender, RoutedEventArgs e)
+        {
+            mainWindow?.RefreshCurrentClock();
+            ClockSettings.Instance.SaveSettings();
+        }
+        
+        private void AnalogFontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            mainWindow?.RefreshCurrentClock();
+            ClockSettings.Instance.SaveSettings();
+        }
+        
+        private void AnalogFontWeight_Changed(object sender, RoutedEventArgs e)
         {
             mainWindow?.RefreshCurrentClock();
             ClockSettings.Instance.SaveSettings();
@@ -180,6 +210,11 @@ namespace MetricClock
         }
 
         private void ClickThroughNotice_Changed(object sender, RoutedEventArgs e)
+        {
+            ClockSettings.Instance.SaveSettings();
+        }
+        
+        private void RunAtStartup_Changed(object sender, RoutedEventArgs e)
         {
             ClockSettings.Instance.SaveSettings();
         }

@@ -2,11 +2,21 @@ name: Build and Package
 
 on:
   push:
-    branches: [ main ]
+    # branches: [ main ]  # Uncomment to also build on main branch pushes
     tags:
       - 'v*'
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
   workflow_dispatch:
 
 jobs:
@@ -83,15 +93,81 @@ jobs:
         Remove-Item -Recurse -Force artifacts/self-contained
         Remove-Item -Recurse -Force artifacts/portable
         
-    # Upload artifacts
-    - name: Upload Build Artifacts
+    # Upload artifacts separately for VirusTotal size limits
+    - name: Upload Framework-Dependent Build
       uses: actions/upload-artifact@v4
       with:
-        name: hudclock-builds
-        path: artifacts/*.zip
+        name: hudclock-framework-dependent
+        path: artifacts/HudClock-win-x64-framework-dependent.zip
         
-  release:
+    - name: Upload Portable Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: hudclock-portable
+        path: artifacts/HudClock-win-x64-portable.zip
+        
+    - name: Upload Self-Contained Build (Large)
+      uses: actions/upload-artifact@v4
+      with:
+        name: hudclock-self-contained
+        path: artifacts/HudClock-win-x64-self-contained.zip
+        
+  virustotal-scan:
     needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    continue-on-error: true  # Don't fail the workflow if scanning fails
+    
+    steps:
+    - name: Download Framework-Dependent artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: hudclock-framework-dependent
+        path: scan-artifacts
+        
+    - name: Download Portable artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: hudclock-portable
+        path: scan-artifacts
+        
+    - name: VirusTotal Scan
+      uses: crazy-max/ghaction-virustotal@v4
+      id: virustotal
+      with:
+        vt_api_key: ${{ secrets.VT_API_KEY }}
+        files: |
+          scan-artifacts/*.zip
+        
+    - name: Generate scan results
+      if: steps.virustotal.outputs.analysis != ''
+      run: |
+        echo "## VirusTotal Scan Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Framework-dependent build: [View scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-framework-dependent.zip.id }})" >> $GITHUB_STEP_SUMMARY
+        echo "Portable build: [View scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})" >> $GITHUB_STEP_SUMMARY
+        
+    - name: Comment on Release (if created)
+      if: steps.virustotal.outputs.analysis != ''
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Wait for release to be created
+        sleep 30
+        # Add VirusTotal info to release
+        gh release edit "${{ github.ref_name }}" \
+          --notes-file - <<EOF
+        $(gh release view "${{ github.ref_name }}" --json body -q .body)
+        
+        ## 🛡️ Security Scans
+        - Framework-dependent build: [VirusTotal scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-framework-dependent.zip.id }})
+        - Portable build: [VirusTotal scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})
+        
+        *Note: Self-contained build exceeds VirusTotal's free API size limit (32MB)*
+        EOF
+  
+  release:
+    needs: [build, virustotal-scan]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -101,11 +177,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Download artifacts
+    - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
-        name: hudclock-builds
         path: artifacts
+        
+    - name: Prepare release files
+      run: |
+        # Move all zip files to a single directory
+        mkdir -p release-files
+        find artifacts -name "*.zip" -exec mv {} release-files/ \;
+        ls -la release-files/
         
     - name: Create Release
       env:
@@ -134,4 +216,4 @@ jobs:
         
         ## What's New
         See [commits](https://github.com/lionfire/hudclock/commits/${{ github.ref_name }}) for details." \
-          artifacts/*.zip
+          release-files/*.zip

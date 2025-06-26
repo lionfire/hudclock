@@ -285,6 +285,80 @@
                             </Grid>
                         </StackPanel>
                     </GroupBox>
+                    
+                    <!-- Font Settings -->
+                    <GroupBox Header="Font Settings" Margin="0,10,0,0">
+                        <StackPanel>
+                            <!-- Font Family -->
+                            <Label Content="Font Family:" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="AnalogFontFamilyCombo" 
+                                      SelectedValue="{Binding AnalogFontFamily, Mode=TwoWay}"
+                                      SelectionChanged="AnalogFontFamily_Changed"
+                                      Margin="5">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type system:String}" xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                        <system:String>Segoe UI</system:String>
+                                        <system:String>Arial</system:String>
+                                        <system:String>Calibri</system:String>
+                                        <system:String>Consolas</system:String>
+                                        <system:String>Courier New</system:String>
+                                        <system:String>Georgia</system:String>
+                                        <system:String>Helvetica</system:String>
+                                        <system:String>Impact</system:String>
+                                        <system:String>Lucida Console</system:String>
+                                        <system:String>Tahoma</system:String>
+                                        <system:String>Times New Roman</system:String>
+                                        <system:String>Trebuchet MS</system:String>
+                                        <system:String>Verdana</system:String>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                            
+                            <!-- Font Size -->
+                            <Label Content="Font Size:" Margin="0,10,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="AnalogFontSizeSlider" 
+                                        Grid.Column="0"
+                                        Minimum="8" 
+                                        Maximum="72" 
+                                        Value="{Binding AnalogFontSize, Mode=TwoWay}"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        Margin="5"
+                                        ValueChanged="AnalogFontSize_ValueChanged"/>
+                                <TextBlock Grid.Column="1" 
+                                           Text="{Binding ElementName=AnalogFontSizeSlider, Path=Value, StringFormat='{}{0:F0}'}"
+                                           Foreground="White"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                            </Grid>
+                            
+                            <!-- Font Weight -->
+                            <Label Content="Font Weight:" Margin="0,10,0,5"/>
+                            <ComboBox x:Name="AnalogFontWeightCombo" 
+                                      SelectedValue="{Binding AnalogFontWeight, Mode=TwoWay}"
+                                      SelectionChanged="AnalogFontWeight_Changed"
+                                      Margin="5">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type system:String}" xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                        <system:String>Thin</system:String>
+                                        <system:String>ExtraLight</system:String>
+                                        <system:String>Light</system:String>
+                                        <system:String>Normal</system:String>
+                                        <system:String>Medium</system:String>
+                                        <system:String>SemiBold</system:String>
+                                        <system:String>Bold</system:String>
+                                        <system:String>ExtraBold</system:String>
+                                        <system:String>Black</system:String>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
@@ -430,6 +504,22 @@
                                        TextWrapping="Wrap"/>
                         </StackPanel>
                     </GroupBox>
+                    
+                    <!-- Startup Settings -->
+                    <GroupBox Header="Startup" Margin="0,10,0,0">
+                        <StackPanel>
+                            <CheckBox x:Name="RunAtStartupCheckBox" 
+                                      Content="Run HudClock when Windows starts" 
+                                      IsChecked="{Binding RunAtStartup, Mode=TwoWay}"
+                                      Checked="RunAtStartup_Changed"
+                                      Unchecked="RunAtStartup_Changed"/>
+                            <TextBlock Text="Automatically start HudClock when you log in" 
+                                       Foreground="#AAAAAA" 
+                                       FontSize="10" 
+                                       Margin="20,2,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
@@ -448,14 +538,14 @@
                         </Grid.ColumnDefinitions>
                         <Slider x:Name="OpacitySlider" 
                                 Grid.Column="0"
-                                Minimum="0.1" Maximum="1.0" 
+                                Minimum="0.05" Maximum="1.0" 
                                 Value="{Binding Opacity, Mode=TwoWay}"
-                                TickFrequency="0.1" 
+                                TickFrequency="0.05" 
                                 IsSnapToTickEnabled="True"
                                 Margin="5"
                                 ValueChanged="OpacitySlider_ValueChanged"/>
                         <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=OpacitySlider, Path=Value, StringFormat='{}{0:F1}'}"
+                                   Text="{Binding ElementName=OpacitySlider, Path=Value, StringFormat='{}{0:F2}'}"
                                    Foreground="White"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Center"/>
@@ -558,14 +648,28 @@
         <TabItem Header="About">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="20">
+                    <!-- Logo -->
+                    <Border Width="128" Height="128" 
+                            HorizontalAlignment="Center"
+                            Margin="0,10,0,10">
+                        <Image Source="pack://siteoforigin:,,,/../../assets/icon/hud_clock_icon_small.svg" 
+                               Stretch="Uniform"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border>
+                    
                     <TextBlock Text="HudClock" 
                                FontSize="24" 
                                FontWeight="Bold" 
                                Foreground="White" 
                                HorizontalAlignment="Center" 
-                               Margin="0,10,0,20"/>
+                               Margin="0,0,0,20"/>
                     
                     <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Foreground="White" Margin="0,5" x:Name="VersionText">
+                            <Run Text="Version: " FontWeight="Bold"/>
+                            <Run Text=""/>
+                        </TextBlock>
+                        
                         <TextBlock Foreground="White" Margin="0,5">
                             <Run Text="Author: " FontWeight="Bold"/>
                             <Run Text="Jared Thirsk"/>

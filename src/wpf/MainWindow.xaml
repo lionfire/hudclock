@@ -309,9 +309,11 @@
                         <Slider x:Name="TitleBarOpacitySlider" 
                                 Width="60" 
                                 Height="15"
-                                Minimum="0.1" 
+                                Minimum="0.05" 
                                 Maximum="1.0" 
                                 Value="{Binding Source={x:Static local:ClockSettings.Instance}, Path=Opacity, Mode=TwoWay}"
+                                TickFrequency="0.05"
+                                IsSnapToTickEnabled="True"
                                 VerticalAlignment="Center"
                                 Margin="0,0,10,0"
                                 ToolTip="Window Opacity">
