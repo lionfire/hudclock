@@ -13,18 +13,19 @@ title: Download HudClock
 </div>
 
 <div class="download-option">
-  <h3>📦 Portable Version</h3>
+  <h3>📦 Self-Contained Version</h3>
   <p><strong>HudClock-win-x64-self-contained.zip</strong> - No installation required</p>
   <p>✅ Single executable | ✅ No admin rights needed | ✅ Includes .NET runtime</p>
-  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Portable</a>
+  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Self-Contained</a>
 </div>
 
 <div class="download-option">
-  <h3>⚡ Lightweight Version</h3>
-  <p><strong>HudClock-win-x64-framework-dependent.zip</strong> - Smallest download</p>
+  <h3>⚡ Portable Version</h3>
+  <p><strong>HudClock-win-x64-portable.zip</strong> - Lightweight single executable</p>
   <p>⚠️ Requires .NET 8 Desktop Runtime | ✅ Only 5MB | ✅ Fast startup</p>
-  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Lightweight</a>
+  <a href="https://github.com/lionfire/hudclock/releases/latest" class="btn">Download Portable</a>
 </div>
+
 
 ## System Requirements
 

@@ -85,17 +85,7 @@ jobs:
           -p:IncludeNativeLibrariesForSelfExtract=true `
           -p:EnableCompressionInSingleFile=true
           
-        # 3. Portable build (multiple files)
-        Write-Host "Building portable version..."
-        dotnet publish src/wpf/MetricClock.csproj `
-          --configuration Release `
-          --runtime win-x64 `
-          --no-self-contained `
-          --output artifacts/portable `
-          -p:DebugType=None `
-          -p:DebugSymbols=false
-          
-        # 4. Build for installer (framework-dependent, no single file)
+        # 3. Build for installer (framework-dependent, no single file)
         Write-Host "Building for installer..."
         dotnet publish src/wpf/MetricClock.csproj `
           --configuration Release `
@@ -121,22 +111,15 @@ jobs:
         
         # Create zip files
         Write-Host "Creating archives..."
-        Compress-Archive -Path artifacts/framework-dependent/* -DestinationPath artifacts/HudClock-win-x64-framework-dependent.zip
+        # Rename framework-dependent to portable since it's a single file
+        Compress-Archive -Path artifacts/framework-dependent/* -DestinationPath artifacts/HudClock-win-x64-portable.zip
         Compress-Archive -Path artifacts/self-contained/* -DestinationPath artifacts/HudClock-win-x64-self-contained.zip
-        Compress-Archive -Path artifacts/portable/* -DestinationPath artifacts/HudClock-win-x64-portable.zip
         
         # Clean up directories, keep only zips and installer
         Remove-Item -Recurse -Force artifacts/framework-dependent
         Remove-Item -Recurse -Force artifacts/self-contained
-        Remove-Item -Recurse -Force artifacts/portable
         
     # Upload artifacts separately for VirusTotal size limits
-    - name: Upload Framework-Dependent Build
-      uses: actions/upload-artifact@v4
-      with:
-        name: hudclock-framework-dependent
-        path: artifacts/HudClock-win-x64-framework-dependent.zip
-        
     - name: Upload Portable Build
       uses: actions/upload-artifact@v4
       with:
@@ -162,12 +145,6 @@ jobs:
     continue-on-error: true  # Don't fail the workflow if scanning fails
     
     steps:
-    - name: Download Framework-Dependent artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: hudclock-framework-dependent
-        path: scan-artifacts
-        
     - name: Download Portable artifact
       uses: actions/download-artifact@v4
       with:
@@ -187,7 +164,6 @@ jobs:
       run: |
         echo "## VirusTotal Scan Results" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Framework-dependent build: [View scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-framework-dependent.zip.id }})" >> $GITHUB_STEP_SUMMARY
         echo "Portable build: [View scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})" >> $GITHUB_STEP_SUMMARY
         
     - name: Comment on Release (if created)
@@ -203,7 +179,6 @@ jobs:
         $(gh release view "${{ github.ref_name }}" --json body -q .body)
         
         ## 🛡️ Security Scans
-        - Framework-dependent build: [VirusTotal scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-framework-dependent.zip.id }})
         - Portable build: [VirusTotal scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})
         
         *Note: Self-contained build exceeds VirusTotal's free API size limit (32MB)*
@@ -248,12 +223,11 @@ jobs:
         **HudClock-win-x64-self-contained.zip** - Single executable file that includes everything needed to run. No installation or .NET runtime required. Just download, extract, and run!
         
         ### 📦 Other Options
-        - **HudClock-win-x64-framework-dependent.zip** - Smaller single executable (requires .NET 8 Desktop Runtime)
-        - **HudClock-win-x64-portable.zip** - Traditional portable app with multiple files
+        - **HudClock-win-x64-portable.zip** - Portable single executable (requires .NET 8 Desktop Runtime)
         
         ## System Requirements
         - Windows 10 or later (64-bit)
-        - .NET 8 Desktop Runtime (only for framework-dependent version)
+        - .NET 8 Desktop Runtime (only for installer and portable versions)
         
         ## Installation
         1. Download your preferred version
