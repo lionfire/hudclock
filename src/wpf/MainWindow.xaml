@@ -1,0 +1,487 @@
+<Window x:Class="MetricClock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MetricClock"
+        mc:Ignorable="d"
+        Title="HudClock" Height="350" Width="350"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ResizeMode="CanResize" MinHeight="200" MinWidth="200">
+    
+    <Grid>
+        <!-- Main content with opacity -->
+        <Grid x:Name="MainContent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Placeholder for control bar space -->
+            <Rectangle Grid.Row="0" Fill="Transparent"/>
+            
+            <!-- Clock Content Area with dark backdrop -->
+            <Grid Grid.Row="1">
+                <!-- Dark backdrop rectangle -->
+                <Rectangle x:Name="DarkBackdrop" 
+                           Fill="#000000" 
+                           RadiusX="0" RadiusY="0"
+                           Margin="0,0,0,10"
+                           Opacity="0.8"/>
+                
+                <!-- Clock Display Area -->
+                <Grid Background="Transparent">
+                    <!-- Dynamic clock container that adjusts based on clock type -->
+                    <Grid x:Name="ClockWrapper" Margin="10">
+                        <!-- Container for analog clocks without ViewBox restriction -->
+                        <Grid x:Name="AnalogClockContainer" Visibility="Visible">
+                            <!-- Analog clock content will be loaded here -->
+                        </Grid>
+                        
+                        <!-- Viewbox container for digital clocks that scales to fill space -->
+                        <Viewbox x:Name="DigitalViewbox" Stretch="Uniform" Visibility="Collapsed">
+                            <Grid x:Name="DigitalContainer">
+                                <!-- Digital clock content will be loaded here -->
+                            </Grid>
+                        </Viewbox>
+                    </Grid>
+                    
+                    <!-- Resize grip -->
+                    <Grid x:Name="ResizeGrip" 
+                          HorizontalAlignment="Right" 
+                          VerticalAlignment="Bottom" 
+                          Width="30" Height="30" 
+                          Background="Transparent"
+                          Cursor="SizeNWSE">
+                        <Canvas Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <!-- Continuous diagonal lines without gaps -->
+                            <Line X1="24" Y1="20" X2="20" Y2="24" Stroke="#66FFFFFF" StrokeThickness="2"/>
+                            <Line X1="24" Y1="16" X2="16" Y2="24" Stroke="#66FFFFFF" StrokeThickness="2"/>
+                            <Line X1="24" Y1="12" X2="12" Y2="24" Stroke="#66FFFFFF" StrokeThickness="2"/>
+                            <Line X1="24" Y1="8" X2="8" Y2="24" Stroke="#66FFFFFF" StrokeThickness="2"/>
+                            <Line X1="24" Y1="4" X2="4" Y2="24" Stroke="#66FFFFFF" StrokeThickness="2"/>
+                            <Line X1="24" Y1="0" X2="0" Y2="24" Stroke="#66FFFFFF" StrokeThickness="2"/>
+                        </Canvas>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+        
+        <!-- Control Bar overlay at full opacity -->
+        <Border x:Name="ControlBar" Background="#FF444444" 
+                CornerRadius="10,10,0,0" MouseLeftButtonDown="ControlBar_MouseLeftButtonDown"
+                Height="35" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Metric Clock" Foreground="White" 
+                                   VerticalAlignment="Center" Margin="10,0"/>
+                        
+                        <!-- Time system/format toggle button -->
+                        <Button x:Name="TimeToggleButton" 
+                                Content="12" 
+                                Width="24" 
+                                Height="20"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="10,0,5,0"
+                                Click="TimeToggle_Click"
+                                ToolTip="Toggle between 12-hour, 24-hour, and metric time">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Display type toggle button -->
+                        <Button x:Name="DisplayToggleButton" 
+                                Content="A" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="0,0,10,0"
+                                Click="DisplayToggle_Click"
+                                ToolTip="Toggle between analog and digital display">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Seconds toggle button -->
+                        <Button x:Name="SecondsToggleButton" 
+                                Content="s" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="5,0,0,0"
+                                Click="SecondsToggle_Click"
+                                ToolTip="Toggle seconds display">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="ButtonBorder"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Minutes toggle button -->
+                        <Button x:Name="MinutesToggleButton" 
+                                Content="m" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="5,0,0,0"
+                                Click="MinutesToggle_Click"
+                                ToolTip="Toggle minutes display">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="ButtonBorder"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Hands toggle button (analog only) -->
+                        <Button x:Name="HandsToggleButton" 
+                                Content="╱" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="5,0,0,0"
+                                Click="HandsToggle_Click"
+                                Visibility="Collapsed"
+                                ToolTip="Toggle clock hands">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Circles toggle button (analog only) -->
+                        <Button x:Name="CirclesToggleButton" 
+                                Content="●" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="12"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="5,0,0,0"
+                                Click="CirclesToggle_Click"
+                                Visibility="Collapsed"
+                                ToolTip="Toggle circles display">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Numbers in circles toggle button (when circles are shown) -->
+                        <Button x:Name="NumbersToggleButton" 
+                                Content="#" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="5,0,0,0"
+                                Click="NumbersToggle_Click"
+                                Visibility="Collapsed"
+                                ToolTip="Toggle numbers in circles">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Date toggle button -->
+                        <Button x:Name="DateToggleButton" 
+                                Content="📅" 
+                                Width="20" 
+                                Height="20"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                Background="#FF666666"
+                                Foreground="White"
+                                BorderThickness="1"
+                                BorderBrush="#FF888888"
+                                Margin="5,0,10,0"
+                                Click="DateToggle_Click"
+                                ToolTip="Toggle date display">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Tiny opacity slider -->
+                        <TextBlock Text="⚪" Foreground="White" 
+                                   VerticalAlignment="Center" Margin="10,0,2,0"
+                                   FontSize="10" ToolTip="Window Opacity"/>
+                        <Slider x:Name="TitleBarOpacitySlider" 
+                                Width="60" 
+                                Height="15"
+                                Minimum="0.1" 
+                                Maximum="1.0" 
+                                Value="{Binding Source={x:Static local:ClockSettings.Instance}, Path=Opacity, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"
+                                ToolTip="Window Opacity">
+                            <Slider.Resources>
+                                <Style TargetType="Slider">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Slider">
+                                                <Grid>
+                                                    <Rectangle Height="4" Fill="#666666" RadiusX="2" RadiusY="2" VerticalAlignment="Center"/>
+                                                    <Track Name="PART_Track">
+                                                        <Track.Thumb>
+                                                            <Thumb Width="10" Height="10">
+                                                                <Thumb.Template>
+                                                                    <ControlTemplate>
+                                                                        <Ellipse Fill="White" Width="10" Height="10"/>
+                                                                    </ControlTemplate>
+                                                                </Thumb.Template>
+                                                            </Thumb>
+                                                        </Track.Thumb>
+                                                    </Track>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Slider.Resources>
+                        </Slider>
+                        
+                        <!-- Backdrop opacity slider -->
+                        <TextBlock Text="■" Foreground="#FF333333" 
+                                   VerticalAlignment="Center" Margin="5,0,2,0"
+                                   FontSize="16" ToolTip="Backdrop Opacity"/>
+                        <Slider x:Name="TitleBarBackdropSlider" 
+                                Width="60" 
+                                Height="15"
+                                Minimum="0.0" 
+                                Maximum="1.0" 
+                                Value="{Binding Source={x:Static local:ClockSettings.Instance}, Path=BackdropOpacity, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"
+                                ToolTip="Backdrop Opacity">
+                            <Slider.Resources>
+                                <Style TargetType="Slider">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Slider">
+                                                <Grid>
+                                                    <Rectangle Height="4" Fill="#666666" RadiusX="2" RadiusY="2" VerticalAlignment="Center"/>
+                                                    <Track Name="PART_Track">
+                                                        <Track.Thumb>
+                                                            <Thumb Width="10" Height="10">
+                                                                <Thumb.Template>
+                                                                    <ControlTemplate>
+                                                                        <Ellipse Fill="White" Width="10" Height="10"/>
+                                                                    </ControlTemplate>
+                                                                </Thumb.Template>
+                                                            </Thumb>
+                                                        </Track.Thumb>
+                                                    </Track>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Slider.Resources>
+                        </Slider>
+                        
+                        <!-- Clock elements opacity slider -->
+                        <TextBlock Text="⊙" Foreground="White" 
+                                   VerticalAlignment="Center" Margin="5,0,2,0"
+                                   FontSize="16" ToolTip="Clock Elements Opacity"/>
+                        <Slider x:Name="TitleBarElementsSlider" 
+                                Width="60" 
+                                Height="15"
+                                Minimum="0.0" 
+                                Maximum="1.0" 
+                                Value="{Binding Source={x:Static local:ClockSettings.Instance}, Path=ClockElementOpacity, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"
+                                ToolTip="Clock Elements Opacity">
+                            <Slider.Resources>
+                                <Style TargetType="Slider">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Slider">
+                                                <Grid>
+                                                    <Rectangle Height="4" Fill="#666666" RadiusX="2" RadiusY="2" VerticalAlignment="Center"/>
+                                                    <Track Name="PART_Track">
+                                                        <Track.Thumb>
+                                                            <Thumb Width="10" Height="10">
+                                                                <Thumb.Template>
+                                                                    <ControlTemplate>
+                                                                        <Ellipse Fill="White" Width="10" Height="10"/>
+                                                                    </ControlTemplate>
+                                                                </Thumb.Template>
+                                                            </Thumb>
+                                                        </Track.Thumb>
+                                                    </Track>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Slider.Resources>
+                        </Slider>
+                        
+                        <!-- Tiny scale slider -->
+                        <TextBlock Text="⚖" Foreground="White" 
+                                   VerticalAlignment="Center" Margin="10,0,2,0"
+                                   FontSize="10" ToolTip="Element Scale"/>
+                        <Slider x:Name="TitleBarScaleSlider" 
+                                Width="60" 
+                                Height="15"
+                                Minimum="0.5" 
+                                Maximum="10.0" 
+                                Value="{Binding Source={x:Static local:ClockSettings.Instance}, Path=ElementScale, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"
+                                ToolTip="Element Scale"
+                                ValueChanged="TitleBarScaleSlider_ValueChanged">
+                            <Slider.Resources>
+                                <Style TargetType="Slider">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Slider">
+                                                <Grid>
+                                                    <Rectangle Height="4" Fill="#666666" RadiusX="2" RadiusY="2" VerticalAlignment="Center"/>
+                                                    <Track Name="PART_Track">
+                                                        <Track.Thumb>
+                                                            <Thumb Width="10" Height="10">
+                                                                <Thumb.Template>
+                                                                    <ControlTemplate>
+                                                                        <Ellipse Fill="White" Width="10" Height="10"/>
+                                                                    </ControlTemplate>
+                                                                </Thumb.Template>
+                                                            </Thumb>
+                                                        </Track.Thumb>
+                                                    </Track>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Slider.Resources>
+                        </Slider>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
+                        <Button Content="⚙" Width="22" Height="22" 
+                                Style="{StaticResource TransparentButton}"
+                                Click="Settings_Click" Margin="2"
+                                ToolTip="Settings"/>
+                        <Button Content="🔲" Width="22" Height="22" 
+                                Style="{StaticResource TransparentButton}"
+                                Click="ToggleClickThrough_Click" Margin="2"
+                                ToolTip="Toggle Click-Through (Ctrl+Shift+C)"/>
+                        <Button Content="➖" Width="22" Height="22" 
+                                Style="{StaticResource TransparentButton}"
+                                Click="Minimize_Click" Margin="2"
+                                ToolTip="Minimize"/>
+                        <Button x:Name="MaximizeButton" Content="🔳" Width="22" Height="22" 
+                                Style="{StaticResource TransparentButton}"
+                                Click="Maximize_Click" Margin="2"
+                                ToolTip="Maximize/Restore"/>
+                        <Button Content="❌" Width="22" Height="22" 
+                                Style="{StaticResource TransparentButton}"
+                                Click="Close_Click" Margin="2"/>
+                    </StackPanel>
+                </Grid>
+        </Border>
+    </Grid>
+</Window>

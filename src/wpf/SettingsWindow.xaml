@@ -1,0 +1,620 @@
+<Window x:Class="MetricClock.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="HudClock Settings" Height="650" Width="560"
+        WindowStyle="ToolWindow" ResizeMode="CanResize"
+        Background="#FF222222">
+    
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="5,2"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF444444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+    <TabControl Grid.Row="0" TabStripPlacement="Left" Background="#FF222222" BorderThickness="0">
+        <TabControl.Resources>
+            <Style TargetType="TabItem">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#FF333333"/>
+                <Setter Property="Padding" Value="15,10"/>
+                <Setter Property="Margin" Value="0,2"/>
+                <Setter Property="MinWidth" Value="120"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border Name="Border" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="#FF555555"
+                                    BorderThickness="0"
+                                    CornerRadius="5,0,0,5"
+                                    Margin="2,2,0,2">
+                                <ContentPresenter x:Name="ContentSite"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"
+                                                  ContentSource="Header"
+                                                  Margin="15,10"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="#FF444444"/>
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="2,2,0,2"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="#FF3A3A3A"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </TabControl.Resources>
+        
+        <!-- Time Settings Tab -->
+        <TabItem Header="Time">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Clock Display Type -->
+                    <GroupBox Header="Clock Display Type">
+                <StackPanel>
+                    <RadioButton x:Name="AnalogRadio" Content="Analog" 
+                                 Foreground="White" Margin="3" 
+                                 IsChecked="{Binding Path=ClockDisplayType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Analog}"
+                                 Checked="ClockDisplayType_Changed" FontSize="11"/>
+                    <RadioButton x:Name="DigitalRadio" Content="Digital" 
+                                 Foreground="White" Margin="3"
+                                 IsChecked="{Binding Path=ClockDisplayType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Digital}"
+                                 Checked="ClockDisplayType_Changed" FontSize="11"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <!-- Time Format -->
+            <GroupBox Header="Time Format">
+                <StackPanel>
+                    <RadioButton x:Name="TwelveHourRadio" Content="12-Hour (AM/PM)" 
+                                 Foreground="White" Margin="3" 
+                                 IsChecked="{Binding Path=TimeFormat, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=TwelveHour}"
+                                 Checked="TimeFormat_Changed" FontSize="11"/>
+                    <RadioButton x:Name="TwentyFourHourRadio" Content="24-Hour" 
+                                 Foreground="White" Margin="3"
+                                 IsChecked="{Binding Path=TimeFormat, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=TwentyFourHour}"
+                                 Checked="TimeFormat_Changed" FontSize="11"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <!-- Time System -->
+            <GroupBox Header="Time System">
+                <StackPanel>
+                    <RadioButton x:Name="StandardRadio" Content="Standard (24 hours)" 
+                                 Foreground="White" Margin="3" 
+                                 IsChecked="{Binding Path=TimeSystem, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Standard}"
+                                 Checked="TimeSystem_Changed" FontSize="11"/>
+                    <RadioButton x:Name="MetricRadio" Content="Metric (10 hours)" 
+                                 Foreground="White" Margin="3"
+                                 IsChecked="{Binding Path=TimeSystem, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Metric}"
+                                 Checked="TimeSystem_Changed" FontSize="11"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <!-- Metric Time Options -->
+            <GroupBox Header="Metric Time Options">
+                <StackPanel>
+                    <CheckBox x:Name="ShowNormalTimeCheckBox" 
+                              Content="Show normal time below metric time" 
+                              IsChecked="{Binding ShowNormalTimeInMetric, Mode=TwoWay}"
+                              Checked="ShowNormalTime_Changed"
+                              Unchecked="ShowNormalTime_Changed"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <!-- Time Display Options -->
+            <GroupBox Header="Time Display Options">
+                <StackPanel>
+                    <CheckBox x:Name="ShowMinutesCheckBox" 
+                              Content="Show minutes" 
+                              IsChecked="{Binding ShowMinutes, Mode=TwoWay}"
+                              Checked="ShowMinutes_Changed"
+                              Unchecked="ShowMinutes_Changed"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <!-- Date Display Options -->
+            <GroupBox Header="Date Display">
+                <StackPanel>
+                    <CheckBox x:Name="ShowDateCheckBox" 
+                              Content="Show date below time" 
+                              IsChecked="{Binding ShowDate, Mode=TwoWay}"
+                              Checked="ShowDate_Changed"
+                              Unchecked="ShowDate_Changed"/>
+                </StackPanel>
+            </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        
+        <!-- Analog Tab -->
+        <TabItem Header="Analog">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Analog Clock Styles -->
+                    <GroupBox Header="Analog Clock Style">
+                        <StackPanel>
+                            <RadioButton x:Name="TraditionalRadio" 
+                                         Content="Traditional (hands only)" 
+                                         IsChecked="{Binding Path=AnalogStyle, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Traditional}"
+                                         Checked="AnalogStyle_Changed"/>
+                            <RadioButton x:Name="CirclesRadio" 
+                                         Content="Circles (no hands)" 
+                                         IsChecked="{Binding Path=AnalogStyle, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Circles}"
+                                         Checked="AnalogStyle_Changed"/>
+                            <RadioButton x:Name="CirclesWithHandsRadio" 
+                                         Content="Circles at ends of hands" 
+                                         IsChecked="{Binding Path=AnalogStyle, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=CirclesWithHands}"
+                                         Checked="AnalogStyle_Changed"/>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Clock Shape -->
+                    <GroupBox Header="Clock Shape">
+                        <StackPanel>
+                            <RadioButton x:Name="CircleShapeRadio" 
+                                         Content="Circle (Traditional)" 
+                                         IsChecked="{Binding Path=ClockShape, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Circle}"
+                                         Checked="ClockShape_Changed"/>
+                            <RadioButton x:Name="ProjectedRectangleRadio" 
+                                         Content="Projected Rectangle" 
+                                         IsChecked="{Binding Path=ClockShape, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=ProjectedRectangle}"
+                                         Checked="ClockShape_Changed"/>
+                            <RadioButton x:Name="RectanglePathRadio" 
+                                         Content="Rectangle Path" 
+                                         IsChecked="{Binding Path=ClockShape, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=RectanglePath}"
+                                         Checked="ClockShape_Changed"/>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Analog Display Options -->
+                    <GroupBox Header="Display Options">
+                        <StackPanel>
+                            <CheckBox x:Name="ShowSecondsCheckBox" 
+                                      Content="Show seconds hand" 
+                                      IsChecked="{Binding ShowSecondsHand, Mode=TwoWay}"
+                                      Checked="ShowSeconds_Changed"
+                                      Unchecked="ShowSeconds_Changed"/>
+                            
+                            <CheckBox x:Name="SmoothSecondsCheckBox" 
+                                      Content="Smooth updates" 
+                                      IsChecked="{Binding SmoothSecondsHand, Mode=TwoWay}"
+                                      Checked="SmoothSeconds_Changed"
+                                      Unchecked="SmoothSeconds_Changed"/>
+                            
+                            <!-- Updates per second slider - only visible when smooth seconds is enabled -->
+                            <Grid x:Name="UpdatesPerSecondGrid" 
+                                  Visibility="{Binding SmoothSecondsHand, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                  Margin="20,5,0,10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" 
+                                           Text="Updates per second:" 
+                                           Foreground="White" 
+                                           Margin="0,0,0,5"
+                                           FontSize="11"/>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Slider x:Name="UpdatesPerSecondSlider" 
+                                            Grid.Column="0"
+                                            Minimum="1" 
+                                            Maximum="120" 
+                                            Value="{Binding UpdatesPerSecond, Mode=TwoWay}"
+                                            TickFrequency="1"
+                                            IsSnapToTickEnabled="True"
+                                            Margin="5"
+                                            ValueChanged="UpdatesPerSecond_ValueChanged"/>
+                                    <TextBlock Grid.Column="1" 
+                                               Text="{Binding ElementName=UpdatesPerSecondSlider, Path=Value, StringFormat='{}{0:F0}'}"
+                                               Foreground="White"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"/>
+                                </Grid>
+                            </Grid>
+                            
+                            <CheckBox x:Name="ShowNumbersInCirclesCheckBox" 
+                                      Content="Show numbers in circles (Circles mode only)" 
+                                      IsChecked="{Binding ShowNumbersInCircles, Mode=TwoWay}"
+                                      Checked="ShowNumbersInCircles_Changed"
+                                      Unchecked="ShowNumbersInCircles_Changed"/>
+                            
+                            <CheckBox x:Name="ShowCenterDotCheckBox" 
+                                      Content="Show center dot (when hands are visible)" 
+                                      IsChecked="{Binding ShowCenterDot, Mode=TwoWay}"
+                                      Checked="ShowCenterDot_Changed"
+                                      Unchecked="ShowCenterDot_Changed"/>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Element Scaling -->
+                    <GroupBox Header="Element Scaling" Margin="0,10,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Scale clock elements (circles, text, hands):" Foreground="White" Margin="0,0,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="ElementScaleSlider" 
+                                        Grid.Column="0"
+                                        Minimum="0.5" 
+                                        Maximum="10.0" 
+                                        Value="{Binding ElementScale, Mode=TwoWay}"
+                                        TickFrequency="0.1"
+                                        IsSnapToTickEnabled="True"
+                                        Margin="5"
+                                        ValueChanged="ElementScale_ValueChanged"/>
+                                <TextBlock Grid.Column="1" 
+                                           Text="{Binding ElementName=ElementScaleSlider, Path=Value, StringFormat='{}{0:F1}'}"
+                                           Foreground="White"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        
+        <!-- Digital Tab -->
+        <TabItem Header="Digital">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Font Settings -->
+                    <GroupBox Header="Font Settings">
+                        <StackPanel>
+                            <!-- Font Family -->
+                            <Label Content="Font Family:" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="FontFamilyCombo" 
+                                      SelectedValue="{Binding DigitalFontFamily, Mode=TwoWay}"
+                                      SelectionChanged="FontFamily_Changed"
+                                      Margin="5">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type system:String}" xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                        <system:String>Segoe UI</system:String>
+                                        <system:String>Arial</system:String>
+                                        <system:String>Calibri</system:String>
+                                        <system:String>Consolas</system:String>
+                                        <system:String>Courier New</system:String>
+                                        <system:String>Georgia</system:String>
+                                        <system:String>Helvetica</system:String>
+                                        <system:String>Impact</system:String>
+                                        <system:String>Lucida Console</system:String>
+                                        <system:String>Tahoma</system:String>
+                                        <system:String>Times New Roman</system:String>
+                                        <system:String>Trebuchet MS</system:String>
+                                        <system:String>Verdana</system:String>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                            
+                            <!-- Font Size -->
+                            <Label Content="Font Size:" Margin="0,10,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="FontSizeSlider" 
+                                        Grid.Column="0"
+                                        Minimum="10" 
+                                        Maximum="200" 
+                                        Value="{Binding DigitalFontSize, Mode=TwoWay}"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        Margin="5"
+                                        ValueChanged="FontSize_ValueChanged"/>
+                                <TextBlock Grid.Column="1" 
+                                           Text="{Binding ElementName=FontSizeSlider, Path=Value, StringFormat='{}{0:F0}'}"
+                                           Foreground="White"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                            </Grid>
+                            
+                            <!-- Font Weight -->
+                            <Label Content="Font Weight:" Margin="0,10,0,5"/>
+                            <ComboBox x:Name="FontWeightCombo" 
+                                      SelectedValue="{Binding DigitalFontWeight, Mode=TwoWay}"
+                                      SelectionChanged="FontWeight_Changed"
+                                      Margin="5">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type system:String}" xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                        <system:String>Thin</system:String>
+                                        <system:String>ExtraLight</system:String>
+                                        <system:String>Light</system:String>
+                                        <system:String>Normal</system:String>
+                                        <system:String>Medium</system:String>
+                                        <system:String>SemiBold</system:String>
+                                        <system:String>Bold</system:String>
+                                        <system:String>ExtraBold</system:String>
+                                        <system:String>Black</system:String>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        
+        <!-- Behavior Tab -->
+        <TabItem Header="Behavior">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Hotkey Settings -->
+                    <GroupBox Header="Hotkey">
+                        <StackPanel>
+                            <TextBlock Text="Click-through toggle hotkey:" Foreground="White" Margin="0,0,0,5"/>
+                            <TextBlock Text="Ctrl + Shift + C" Foreground="#CCCCCC" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock Text="(This hotkey cannot be changed yet)" Foreground="#888888" FontSize="10"/>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Taskbar Visibility -->
+                    <GroupBox Header="Taskbar Visibility" Margin="0,10,0,0">
+                        <StackPanel>
+                            <CheckBox x:Name="HideFromTaskbarNormalCheckBox" 
+                                      Content="Hide from taskbar in normal mode" 
+                                      IsChecked="{Binding HideFromTaskbarNormal, Mode=TwoWay}"
+                                      Checked="TaskbarVisibility_Changed"
+                                      Unchecked="TaskbarVisibility_Changed"/>
+                            <CheckBox x:Name="HideFromTaskbarClickThroughCheckBox" 
+                                      Content="Hide from taskbar in click-through mode" 
+                                      IsChecked="{Binding HideFromTaskbarClickThrough, Mode=TwoWay}"
+                                      Checked="TaskbarVisibility_Changed"
+                                      Unchecked="TaskbarVisibility_Changed"/>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Tray Icon Visibility -->
+                    <GroupBox Header="System Tray Icon" Margin="0,10,0,0">
+                        <StackPanel>
+                            <CheckBox x:Name="ShowTrayIconNormalCheckBox" 
+                                      Content="Show tray icon in normal mode" 
+                                      IsChecked="{Binding ShowTrayIconNormal, Mode=TwoWay}"
+                                      Checked="TrayIconVisibility_Changed"
+                                      Unchecked="TrayIconVisibility_Changed"/>
+                            <CheckBox x:Name="ShowTrayIconClickThroughCheckBox" 
+                                      Content="Show tray icon in click-through mode" 
+                                      IsChecked="{Binding ShowTrayIconClickThrough, Mode=TwoWay}"
+                                      Checked="TrayIconVisibility_Changed"
+                                      Unchecked="TrayIconVisibility_Changed"/>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Click-through Notification -->
+                    <GroupBox Header="Notifications" Margin="0,10,0,0">
+                        <StackPanel>
+                            <CheckBox x:Name="ShowClickThroughNoticeCheckBox" 
+                                      Content="Show notice when enabling click-through mode" 
+                                      IsChecked="{Binding ShowClickThroughNotice, Mode=TwoWay}"
+                                      Checked="ClickThroughNotice_Changed"
+                                      Unchecked="ClickThroughNotice_Changed"/>
+                            <TextBlock Text="Displays a reminder about the hotkey to exit click-through mode" 
+                                       Foreground="#AAAAAA" 
+                                       FontSize="10" 
+                                       Margin="20,2,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        
+        <!-- Transparency Tab -->
+        <TabItem Header="Transparency">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <GroupBox Header="Transparency">
+                        <StackPanel>
+                    <Label Content="Window Opacity:"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider x:Name="OpacitySlider" 
+                                Grid.Column="0"
+                                Minimum="0.1" Maximum="1.0" 
+                                Value="{Binding Opacity, Mode=TwoWay}"
+                                TickFrequency="0.1" 
+                                IsSnapToTickEnabled="True"
+                                Margin="5"
+                                ValueChanged="OpacitySlider_ValueChanged"/>
+                        <TextBlock Grid.Column="1" 
+                                   Text="{Binding ElementName=OpacitySlider, Path=Value, StringFormat='{}{0:F1}'}"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"/>
+                    </Grid>
+                    
+                    <Label Content="Dark Backdrop Opacity:" Margin="0,10,0,0"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider x:Name="BackdropOpacitySlider" 
+                                Grid.Column="0"
+                                Minimum="0.0" Maximum="1.0" 
+                                Value="{Binding BackdropOpacity, Mode=TwoWay}"
+                                TickFrequency="0.1" 
+                                IsSnapToTickEnabled="True"
+                                Margin="5"
+                                ValueChanged="BackdropOpacitySlider_ValueChanged"/>
+                        <TextBlock Grid.Column="1" 
+                                   Text="{Binding ElementName=BackdropOpacitySlider, Path=Value, StringFormat='{}{0:F1}'}"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"/>
+                    </Grid>
+                    
+                    <Label Content="Clock Elements Opacity:" Margin="0,10,0,0"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider x:Name="ClockElementOpacitySlider" 
+                                Grid.Column="0"
+                                Minimum="0.0" Maximum="1.0" 
+                                Value="{Binding ClockElementOpacity, Mode=TwoWay}"
+                                TickFrequency="0.1" 
+                                IsSnapToTickEnabled="True"
+                                Margin="5"
+                                ValueChanged="ClockElementOpacitySlider_ValueChanged"/>
+                        <TextBlock Grid.Column="1" 
+                                   Text="{Binding ElementName=ClockElementOpacitySlider, Path=Value, StringFormat='{}{0:F1}'}"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"/>
+                    </Grid>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        
+        <!-- Settings Tab -->
+        <TabItem Header="Settings">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Application Settings -->
+                    <GroupBox Header="Application Settings">
+                        <StackPanel>
+                            <TextBlock Text="Settings are stored in:" Foreground="White" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="SettingsPathText" 
+                                       Foreground="#CCCCCC" 
+                                       FontFamily="Consolas"
+                                       Margin="0,0,0,10"
+                                       TextWrapping="Wrap"/>
+                            <Button Content="Open Settings Directory" 
+                                    Width="200" 
+                                    Height="30"
+                                    HorizontalAlignment="Left"
+                                    Click="OpenSettingsDirectory_Click"
+                                    Background="#FF555555"
+                                    Foreground="White">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="#FF777777"
+                                                BorderThickness="1"
+                                                CornerRadius="3">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                              VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#FF666666"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="#FF444444"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+        <!-- About Tab -->
+        <TabItem Header="About">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <TextBlock Text="HudClock" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Foreground="White" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,10,0,20"/>
+                    
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Foreground="White" Margin="0,5">
+                            <Run Text="Author: " FontWeight="Bold"/>
+                            <Run Text="Jared Thirsk"/>
+                        </TextBlock>
+                        
+                        <TextBlock Foreground="White" Margin="0,5">
+                            <Run Text="Company: " FontWeight="Bold"/>
+                            <Run Text="LionFire Software"/>
+                        </TextBlock>
+                        
+                        <TextBlock Foreground="White" Margin="0,5">
+                            <Run Text="License: " FontWeight="Bold"/>
+                            <Run Text="Apache-2.0"/>
+                        </TextBlock>
+                        
+                        <TextBlock Margin="0,15,0,5">
+                            <Hyperlink NavigateUri="https://github.com/lionfire/hudclock" 
+                                       RequestNavigate="Hyperlink_RequestNavigate">
+                                <TextBlock Text="https://github.com/lionfire/hudclock" 
+                                           Foreground="#FF00CCFF"/>
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                    
+                    <TextBlock Text="A customizable clock for your desktop with metric time support." 
+                               Foreground="#FFCCCCCC" 
+                               TextWrapping="Wrap" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,20,0,0"/>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+    </TabControl>
+    
+    <!-- Global Buttons outside TabControl -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">
+        <Button Content="Reset Defaults" 
+                Width="100" Height="30" 
+                Margin="5"
+                Click="ResetDefaults_Click"
+                Background="#FF444444"
+                Foreground="White"/>
+        <Button Content="Close" 
+                Width="80" Height="30" 
+                Margin="5"
+                Click="Close_Click"
+                Background="#FF444444"
+                Foreground="White"/>
+    </StackPanel>
+    </Grid>
+</Window>

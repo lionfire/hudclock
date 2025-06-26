@@ -1,0 +1,52 @@
+<UserControl x:Class="MetricClock.MetricClockView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d">
+    <Border Background="#22FFFFFF" CornerRadius="10" Padding="20,15">
+        <Border.ToolTip>
+            <StackPanel MaxWidth="300">
+                <TextBlock Text="Metric Time" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBlock TextWrapping="Wrap">
+                    Metric time divides the day into 10 hours, each hour into 100 minutes, and each minute into 100 seconds.
+                </TextBlock>
+                <TextBlock Margin="0,5,0,0">
+                    • 1 metric hour = 2.4 standard hours (144 minutes)
+                </TextBlock>
+                <TextBlock>
+                    • 1 metric minute = 1.44 standard minutes (86.4 seconds)
+                </TextBlock>
+                <TextBlock>
+                    • 1 metric second = 0.864 standard seconds
+                </TextBlock>
+            </StackPanel>
+        </Border.ToolTip>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock x:Name="MetricTimeDisplay" 
+                           Text="0:00:00" 
+                           FontSize="48" 
+                           FontFamily="Consolas"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
+                
+                <TextBlock x:Name="StandardTimeDisplay" 
+                           Text="(00:00:00)" 
+                           FontSize="14" 
+                           FontFamily="Consolas"
+                           Foreground="#CCCCCC"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0"/>
+                
+                <TextBlock x:Name="DateDisplay" 
+                           Text="Monday, January 1, 2024" 
+                           FontSize="14" 
+                           FontFamily="Segoe UI"
+                           Foreground="#CCCCCC"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0"
+                           Visibility="Collapsed"/>
+            </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,73 @@
+<Window x:Class="MetricClock.ClickThroughNoticeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Click-Through Mode Enabled" 
+        Height="220" 
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="ToolWindow"
+        ResizeMode="NoResize"
+        Background="#FF222222">
+    
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#FF444444"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF666666"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF555555"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Title -->
+        <TextBlock Grid.Row="0" 
+                   Text="Click-Through Mode Enabled" 
+                   FontSize="18" 
+                   FontWeight="Bold" 
+                   Foreground="White"
+                   Margin="0,0,0,15"/>
+        
+        <!-- Message -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+            <TextBlock Text="The clock is now in click-through mode." 
+                       Foreground="White"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,10"/>
+            
+            <TextBlock Foreground="White" TextWrapping="Wrap">
+                <Run Text="To exit click-through mode, press"/>
+                <Run Text="Ctrl + Shift + C" FontWeight="Bold" Foreground="#00CCFF"/>
+                <Run Text="or click the tray icon."/>
+            </TextBlock>
+        </StackPanel>
+        
+        <!-- Checkbox -->
+        <CheckBox Grid.Row="2" 
+                  x:Name="AlwaysShowCheckBox"
+                  Content="Always show this message" 
+                  Foreground="White"
+                  IsChecked="True"
+                  Margin="0,15,0,10"/>
+        
+        <!-- Button -->
+        <Button Grid.Row="3" 
+                Content="OK" 
+                Width="80"
+                HorizontalAlignment="Right"
+                Click="OK_Click"/>
+    </Grid>
+</Window>
