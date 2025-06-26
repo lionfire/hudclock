@@ -138,59 +138,59 @@ jobs:
         name: hudclock-installer
         path: artifacts/HudClock-*-Setup.exe
         
-  virustotal-scan:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    continue-on-error: true  # Don't fail the workflow if scanning fails
-    
-    steps:
-    - name: Download Portable artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: hudclock-portable
-        path: scan-artifacts
-        
-    - name: Rate limit delay
-      run: |
-        echo "Waiting 15 seconds to avoid VirusTotal rate limits..."
-        sleep 15
-        
-    - name: VirusTotal Scan
-      uses: crazy-max/ghaction-virustotal@v4
-      id: virustotal
-      with:
-        vt_api_key: ${{ secrets.VT_API_KEY }}
-        files: |
-          scan-artifacts/HudClock-win-x64-portable.zip
-        
-    - name: Generate scan results
-      if: steps.virustotal.outputs.analysis != ''
-      run: |
-        echo "## VirusTotal Scan Results" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Portable build: [View scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})" >> $GITHUB_STEP_SUMMARY
-        
-    - name: Comment on Release (if created)
-      if: steps.virustotal.outputs.analysis != ''
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # Wait for release to be created
-        sleep 30
-        # Add VirusTotal info to release
-        gh release edit "${{ github.ref_name }}" \
-          --notes-file - <<EOF
-        $(gh release view "${{ github.ref_name }}" --json body -q .body)
-        
-        ## 🛡️ Security Scans
-        - Portable build: [VirusTotal scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})
-        
-        *Note: Self-contained build exceeds VirusTotal's free API size limit (32MB)*
-        EOF
+  # virustotal-scan:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   if: startsWith(github.ref, 'refs/tags/v')
+  #   continue-on-error: true  # Don't fail the workflow if scanning fails
+  #   
+  #   steps:
+  #   - name: Download Portable artifact
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: hudclock-portable
+  #       path: scan-artifacts
+  #       
+  #   - name: Rate limit delay
+  #     run: |
+  #       echo "Waiting 15 seconds to avoid VirusTotal rate limits..."
+  #       sleep 15
+  #       
+  #   - name: VirusTotal Scan
+  #     uses: crazy-max/ghaction-virustotal@v4
+  #     id: virustotal
+  #     with:
+  #       vt_api_key: ${{ secrets.VT_API_KEY }}
+  #       files: |
+  #         scan-artifacts/HudClock-win-x64-portable.zip
+  #       
+  #   - name: Generate scan results
+  #     if: steps.virustotal.outputs.analysis != ''
+  #     run: |
+  #       echo "## VirusTotal Scan Results" >> $GITHUB_STEP_SUMMARY
+  #       echo "" >> $GITHUB_STEP_SUMMARY
+  #       echo "Portable build: [View scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})" >> $GITHUB_STEP_SUMMARY
+  #       
+  #   - name: Comment on Release (if created)
+  #     if: steps.virustotal.outputs.analysis != ''
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     run: |
+  #       # Wait for release to be created
+  #       sleep 30
+  #       # Add VirusTotal info to release
+  #       gh release edit "${{ github.ref_name }}" \
+  #         --notes-file - <<EOF
+  #       $(gh release view "${{ github.ref_name }}" --json body -q .body)
+  #       
+  #       ## 🛡️ Security Scans
+  #       - Portable build: [VirusTotal scan](https://www.virustotal.com/gui/file-analysis/${{ fromJSON(steps.virustotal.outputs.analysis).HudClock-win-x64-portable.zip.id }})
+  #       
+  #       *Note: Self-contained build exceeds VirusTotal's free API size limit (32MB)*
+  #       EOF
   
   release:
-    needs: [build, virustotal-scan]
+    needs: [build]  # removed virustotal-scan dependency
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -246,9 +246,6 @@ jobs:
         - Windows 10 or later (64-bit)
         - 1920x1080 or higher resolution recommended
         - ~100MB RAM when running
-        
-        ## 🛡️ Security
-        The portable build has been scanned with VirusTotal. The self-contained build exceeds VirusTotal's 32MB file size limit for free scanning but is built from the same source code.
         
         ## 📝 What's New in ${{ github.ref_name }}
         - Added Windows installer with Inno Setup
