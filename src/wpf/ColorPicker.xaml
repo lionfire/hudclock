@@ -27,7 +27,11 @@
                         BorderBrush="Black" 
                         BorderThickness="1"
                         Margin="2,0,5,0">
-                    <Rectangle x:Name="ColorPreview" Fill="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <Rectangle x:Name="ColorPreview">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
                 </Border>
                 
                 <!-- Color Text -->
@@ -171,7 +175,11 @@
                             Height="30" 
                             BorderBrush="Black" 
                             BorderThickness="1">
-                        <Rectangle x:Name="CurrentColorDisplay" Fill="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <Rectangle x:Name="CurrentColorDisplay">
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
                     </Border>
                 </Grid>
             </Border>

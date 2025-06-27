@@ -143,6 +143,11 @@ namespace MetricClock
             {
                 UpdateToggleButtons();
             }
+            else if (e.PropertyName != null && e.PropertyName.Contains("Color"))
+            {
+                // Refresh analog clock when any color property changes
+                RefreshCurrentClock();
+            }
             else if (e.PropertyName == nameof(ClockSettings.SmoothSecondsHand) ||
                      e.PropertyName == nameof(ClockSettings.UpdatesPerSecond))
             {

@@ -23,7 +23,8 @@ namespace MetricClock
         {
             InitializeComponent();
             InitializeQuickColors();
-            UpdateSlidersFromColor();
+            // Don't update sliders here - they're not initialized yet
+            // UpdateSlidersFromColor() will be called by OnSelectedColorChanged after initialization
         }
 
         private void InitializeQuickColors()
@@ -66,6 +67,12 @@ namespace MetricClock
         private void UpdateSlidersFromColor()
         {
             if (_isUpdating) return;
+            
+            // Check if sliders are initialized
+            if (AlphaSlider == null || RedSlider == null || 
+                GreenSlider == null || BlueSlider == null)
+                return;
+                
             _isUpdating = true;
 
             var color = SelectedColor;
@@ -79,12 +86,19 @@ namespace MetricClock
 
         private void UpdateHexTextBox()
         {
+            if (HexTextBox == null) return;
             HexTextBox.Text = $"#{SelectedColor.A:X2}{SelectedColor.R:X2}{SelectedColor.G:X2}{SelectedColor.B:X2}";
         }
 
         private void ColorSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (_isUpdating) return;
+            
+            // Check if sliders are initialized
+            if (AlphaSlider == null || RedSlider == null || 
+                GreenSlider == null || BlueSlider == null)
+                return;
+                
             _isUpdating = true;
 
             SelectedColor = System.Windows.Media.Color.FromArgb(

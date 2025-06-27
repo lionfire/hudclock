@@ -291,6 +291,9 @@ namespace MetricClock
             MinuteHand.StrokeThickness = 4 * elementScale;
             SecondHand.StrokeThickness = 2 * elementScale;
             
+            // Apply colors from settings
+            ApplyColorsFromSettings();
+            
             // Update center dot visibility based on settings and whether hands are visible
             bool handsVisible = (style == AnalogClockStyle.Traditional || style == AnalogClockStyle.CirclesWithHands);
             if (CenterDot != null)
@@ -308,7 +311,7 @@ namespace MetricClock
                     {
                         Width = 20 * elementScale,
                         Height = 20 * elementScale,
-                        Fill = System.Windows.Media.Brushes.White,
+                        Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.HourHandFillColor)),
                         Opacity = 1.0
                     };
                     ClockCanvas.Children.Add(hourCircle);
@@ -317,7 +320,7 @@ namespace MetricClock
                     {
                         Width = 16 * elementScale,
                         Height = 16 * elementScale,
-                        Fill = System.Windows.Media.Brushes.White,
+                        Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.MinuteHandFillColor)),
                         Opacity = 1.0
                     };
                     ClockCanvas.Children.Add(minuteCircle);
@@ -326,7 +329,7 @@ namespace MetricClock
                     {
                         Width = 12 * elementScale,
                         Height = 12 * elementScale,
-                        Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 68, 68)),
+                        Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.SecondHandFillColor)),
                         Opacity = 1.0
                     };
                     ClockCanvas.Children.Add(secondCircle);
@@ -337,10 +340,12 @@ namespace MetricClock
                         hourNumber = new TextBlock
                         {
                             Text = "",
-                            Foreground = System.Windows.Media.Brushes.Black,
-                            FontSize = 10 * elementScale,
-                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.HourTextColor)),
+                            FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                            FontSize = ClockSettings.Instance.AnalogFontSize * elementScale,
+                            FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
                         };
                         ClockCanvas.Children.Add(hourNumber);
@@ -348,10 +353,12 @@ namespace MetricClock
                         minuteNumber = new TextBlock
                         {
                             Text = "",
-                            Foreground = System.Windows.Media.Brushes.Black,
-                            FontSize = 9 * elementScale,
-                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.MinuteTextColor)),
+                            FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                            FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9,
+                            FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
                         };
                         ClockCanvas.Children.Add(minuteNumber);
@@ -359,10 +366,12 @@ namespace MetricClock
                         secondNumber = new TextBlock
                         {
                             Text = "",
-                            Foreground = System.Windows.Media.Brushes.Black,
-                            FontSize = 8 * elementScale,
-                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(ClockSettings.Instance.SecondTextColor)),
+                            FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily),
+                            FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8,
+                            FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight),
                             TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
                             Opacity = 1.0
                         };
                         ClockCanvas.Children.Add(secondNumber);
@@ -435,9 +444,24 @@ namespace MetricClock
                     }
                     
                     // Update font sizes if numbers exist
-                    if (hourNumber != null) hourNumber.FontSize = 10 * elementScale;
-                    if (minuteNumber != null) minuteNumber.FontSize = 9 * elementScale;
-                    if (secondNumber != null) secondNumber.FontSize = 8 * elementScale;
+                    if (hourNumber != null) 
+                    {
+                        hourNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale;
+                        hourNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
+                        hourNumber.FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight);
+                    }
+                    if (minuteNumber != null) 
+                    {
+                        minuteNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.9;
+                        minuteNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
+                        minuteNumber.FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight);
+                    }
+                    if (secondNumber != null) 
+                    {
+                        secondNumber.FontSize = ClockSettings.Instance.AnalogFontSize * elementScale * 0.8;
+                        secondNumber.FontFamily = new System.Windows.Media.FontFamily(ClockSettings.Instance.AnalogFontFamily);
+                        secondNumber.FontWeight = GetFontWeight(ClockSettings.Instance.AnalogFontWeight);
+                    }
                 }
             }
             
@@ -521,7 +545,8 @@ namespace MetricClock
             double centerX = width / 2;
             double centerY = height / 2;
             
-            number.Text = value.ToString();
+            // Update the text to show the actual time value with padding for single digits
+            number.Text = value.ToString("00");
             
             // Force measurement of the text
             number.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -614,27 +639,42 @@ namespace MetricClock
                         double radius = hourCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, hourPos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, hourPos.Y));
-                        Canvas.SetLeft(hourNumber, x - 6);
-                        Canvas.SetTop(hourNumber, y - 5);
-                        hourNumber.Text = now.Hour.ToString();
+                        // Update text and measure it
+                        hourNumber.Text = now.Hour.ToString("00");
+                        hourNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = hourNumber.DesiredSize.Width;
+                        double textHeight = hourNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(hourNumber, x - textWidth / 2);
+                        Canvas.SetTop(hourNumber, y - textHeight / 2);
                     }
                     if (minuteNumber != null && minuteCircle != null)
                     {
                         double radius = minuteCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, minutePos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, minutePos.Y));
-                        Canvas.SetLeft(minuteNumber, x - 6);
-                        Canvas.SetTop(minuteNumber, y - 5);
-                        minuteNumber.Text = now.Minute.ToString();
+                        // Update text and measure it
+                        minuteNumber.Text = now.Minute.ToString("00");
+                        minuteNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = minuteNumber.DesiredSize.Width;
+                        double textHeight = minuteNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(minuteNumber, x - textWidth / 2);
+                        Canvas.SetTop(minuteNumber, y - textHeight / 2);
                     }
                     if (secondNumber != null && secondCircle != null)
                     {
                         double radius = secondCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, secondPos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, secondPos.Y));
-                        Canvas.SetLeft(secondNumber, x - 6);
-                        Canvas.SetTop(secondNumber, y - 5);
-                        secondNumber.Text = now.Second.ToString();
+                        // Update text and measure it
+                        secondNumber.Text = now.Second.ToString("00");
+                        secondNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = secondNumber.DesiredSize.Width;
+                        double textHeight = secondNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(secondNumber, x - textWidth / 2);
+                        Canvas.SetTop(secondNumber, y - textHeight / 2);
                     }
                 }
             }
@@ -727,27 +767,42 @@ namespace MetricClock
                         double radius = hourCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, hourPos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, hourPos.Y));
-                        Canvas.SetLeft(hourNumber, x - 6);
-                        Canvas.SetTop(hourNumber, y - 5);
-                        hourNumber.Text = now.Hour.ToString();
+                        // Update text and measure it
+                        hourNumber.Text = now.Hour.ToString("00");
+                        hourNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = hourNumber.DesiredSize.Width;
+                        double textHeight = hourNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(hourNumber, x - textWidth / 2);
+                        Canvas.SetTop(hourNumber, y - textHeight / 2);
                     }
                     if (minuteNumber != null && minuteCircle != null)
                     {
                         double radius = minuteCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, minutePos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, minutePos.Y));
-                        Canvas.SetLeft(minuteNumber, x - 6);
-                        Canvas.SetTop(minuteNumber, y - 5);
-                        minuteNumber.Text = now.Minute.ToString();
+                        // Update text and measure it
+                        minuteNumber.Text = now.Minute.ToString("00");
+                        minuteNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = minuteNumber.DesiredSize.Width;
+                        double textHeight = minuteNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(minuteNumber, x - textWidth / 2);
+                        Canvas.SetTop(minuteNumber, y - textHeight / 2);
                     }
                     if (secondNumber != null && secondCircle != null)
                     {
                         double radius = secondCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, secondPos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, secondPos.Y));
-                        Canvas.SetLeft(secondNumber, x - 6);
-                        Canvas.SetTop(secondNumber, y - 5);
-                        secondNumber.Text = now.Second.ToString();
+                        // Update text and measure it
+                        secondNumber.Text = now.Second.ToString("00");
+                        secondNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = secondNumber.DesiredSize.Width;
+                        double textHeight = secondNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(secondNumber, x - textWidth / 2);
+                        Canvas.SetTop(secondNumber, y - textHeight / 2);
                     }
                 }
             }
@@ -831,6 +886,93 @@ namespace MetricClock
             }
             
             return new System.Windows.Point(x, y);
+        }
+        
+        private FontWeight GetFontWeight(string fontWeightString)
+        {
+            try
+            {
+                var converter = new FontWeightConverter();
+                var result = converter.ConvertFromString(fontWeightString);
+                return result != null ? (FontWeight)result : FontWeights.Normal;
+            }
+            catch
+            {
+                return FontWeights.Normal;
+            }
+        }
+        
+        private void ApplyColorsFromSettings()
+        {
+            var settings = ClockSettings.Instance;
+            
+            // Apply hand colors
+            try
+            {
+                HourHand.Stroke = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.HourHandStrokeColor));
+                MinuteHand.Stroke = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.MinuteHandStrokeColor));
+                SecondHand.Stroke = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.SecondHandStrokeColor));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying hand colors: {ex.Message}");
+            }
+            
+            // Apply circle colors if they exist
+            if (hourCircle != null)
+            {
+                try
+                {
+                    hourCircle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.HourHandFillColor));
+                }
+                catch { }
+            }
+            
+            if (minuteCircle != null)
+            {
+                try
+                {
+                    minuteCircle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.MinuteHandFillColor));
+                }
+                catch { }
+            }
+            
+            if (secondCircle != null)
+            {
+                try
+                {
+                    secondCircle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.SecondHandFillColor));
+                }
+                catch { }
+            }
+            
+            // Apply text colors if they exist
+            if (hourNumber != null)
+            {
+                try
+                {
+                    hourNumber.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.HourTextColor));
+                }
+                catch { }
+            }
+            
+            if (minuteNumber != null)
+            {
+                try
+                {
+                    minuteNumber.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.MinuteTextColor));
+                }
+                catch { }
+            }
+            
+            if (secondNumber != null)
+            {
+                try
+                {
+                    secondNumber.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.SecondTextColor));
+                }
+                catch { }
+            }
         }
     }
 }

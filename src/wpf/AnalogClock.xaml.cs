@@ -539,8 +539,8 @@ namespace MetricClock
             double centerX = width / 2;
             double centerY = height / 2;
             
-            // Update the text to show the actual time value
-            number.Text = value.ToString();
+            // Update the text to show the actual time value with padding for single digits
+            number.Text = value.ToString("00");
             
             // Force measurement of the text
             number.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -550,7 +550,7 @@ namespace MetricClock
             double radians = angleDegrees * Math.PI / 180;
             
             // Calculate position to center the text exactly at the circle's center
-            // The radius here is the same as the circle's radius, so the text will be centered in the circle
+            // Account for text baseline offset by adding a small vertical adjustment
             double x = centerX + radius * Math.Cos(radians) - textWidth / 2;
             double y = centerY + radius * Math.Sin(radians) - textHeight / 2;
             
@@ -789,27 +789,45 @@ namespace MetricClock
                         double radius = hourCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, hourPos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, hourPos.Y));
-                        Canvas.SetLeft(hourNumber, x - 6);
-                        Canvas.SetTop(hourNumber, y - 5);
-                        hourNumber.Text = (now.Hour % 12).ToString();
+                        
+                        // Update text and measure it
+                        hourNumber.Text = (now.Hour % 12).ToString("00");
+                        hourNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = hourNumber.DesiredSize.Width;
+                        double textHeight = hourNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(hourNumber, x - textWidth / 2);
+                        Canvas.SetTop(hourNumber, y - textHeight / 2);
                     }
                     if (minuteNumber != null && minuteCircle != null)
                     {
                         double radius = minuteCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, minutePos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, minutePos.Y));
-                        Canvas.SetLeft(minuteNumber, x - 6);
-                        Canvas.SetTop(minuteNumber, y - 5);
-                        minuteNumber.Text = now.Minute.ToString();
+                        
+                        // Update text and measure it
+                        minuteNumber.Text = now.Minute.ToString("00");
+                        minuteNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = minuteNumber.DesiredSize.Width;
+                        double textHeight = minuteNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(minuteNumber, x - textWidth / 2);
+                        Canvas.SetTop(minuteNumber, y - textHeight / 2);
                     }
                     if (secondNumber != null && secondCircle != null)
                     {
                         double radius = secondCircle.Width / 2;
                         double x = Math.Max(radius, Math.Min(width - radius, secondPos.X));
                         double y = Math.Max(radius, Math.Min(height - radius, secondPos.Y));
-                        Canvas.SetLeft(secondNumber, x - 6);
-                        Canvas.SetTop(secondNumber, y - 5);
-                        secondNumber.Text = now.Second.ToString();
+                        
+                        // Update text and measure it
+                        secondNumber.Text = now.Second.ToString("00");
+                        secondNumber.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        double textWidth = secondNumber.DesiredSize.Width;
+                        double textHeight = secondNumber.DesiredSize.Height;
+                        
+                        Canvas.SetLeft(secondNumber, x - textWidth / 2);
+                        Canvas.SetTop(secondNumber, y - textHeight / 2);
                     }
                 }
             }
