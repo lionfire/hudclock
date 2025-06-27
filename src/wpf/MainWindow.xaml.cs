@@ -363,6 +363,17 @@ namespace MetricClock
                 // Hide control bar and resize grip in click-through mode
                 ControlBar.Visibility = Visibility.Collapsed;
                 ResizeGrip.Visibility = Visibility.Collapsed;
+                
+                // Make the window truly full screen by removing the title bar space
+                var mainContentGrid = MainContent.Parent as System.Windows.Controls.Grid;
+                if (mainContentGrid != null && mainContentGrid.RowDefinitions.Count > 0)
+                {
+                    mainContentGrid.RowDefinitions[0].Height = new GridLength(0);
+                }
+                
+                // Remove bottom margin from dark backdrop for true full screen
+                DarkBackdrop.Margin = new Thickness(0);
+                
                 ShowInTaskbar = !ClockSettings.Instance.HideFromTaskbarClickThrough;
                 trayIcon!.Text = "HudClock - Click-through enabled";
                 trayIcon!.Visible = ClockSettings.Instance.ShowTrayIconClickThrough;
@@ -372,6 +383,17 @@ namespace MetricClock
                 SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle & ~WS_EX_TRANSPARENT);
                 ControlBar.Visibility = Visibility.Visible;
                 ResizeGrip.Visibility = Visibility.Visible;
+                
+                // Restore the title bar space
+                var mainContentGrid = MainContent.Parent as System.Windows.Controls.Grid;
+                if (mainContentGrid != null && mainContentGrid.RowDefinitions.Count > 0)
+                {
+                    mainContentGrid.RowDefinitions[0].Height = new GridLength(35);
+                }
+                
+                // Restore bottom margin on dark backdrop
+                DarkBackdrop.Margin = new Thickness(0, 0, 0, 10);
+                
                 ShowInTaskbar = !ClockSettings.Instance.HideFromTaskbarNormal;
                 trayIcon!.Text = "HudClock - Click to toggle click-through";
                 trayIcon!.Visible = ClockSettings.Instance.ShowTrayIconNormal;
