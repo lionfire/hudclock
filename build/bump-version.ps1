@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # Script to bump version numbers for HudClock
 param(
     [Parameter(Mandatory=$true)]
