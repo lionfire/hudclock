@@ -199,6 +199,12 @@
                     <!-- Analog Display Options -->
                     <GroupBox Header="Display Options">
                         <StackPanel>
+                            <CheckBox x:Name="ShowMinutesHandCheckBox" 
+                                      Content="Show minutes hand" 
+                                      IsChecked="{Binding ShowMinutes, Mode=TwoWay}"
+                                      Checked="ShowMinutes_Changed"
+                                      Unchecked="ShowMinutes_Changed"/>
+                            
                             <CheckBox x:Name="ShowSecondsCheckBox" 
                                       Content="Show seconds hand" 
                                       IsChecked="{Binding ShowSecondsHand, Mode=TwoWay}"
