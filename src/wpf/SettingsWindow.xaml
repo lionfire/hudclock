@@ -742,7 +742,7 @@
                     <Border Width="128" Height="128" 
                             HorizontalAlignment="Center"
                             Margin="0,10,0,10">
-                        <Image Source="pack://siteoforigin:,,,/../../assets/icon/hud_clock_icon_small.svg" 
+                        <Image Source="HudClock.ico" 
                                Stretch="Uniform"
                                RenderOptions.BitmapScalingMode="HighQuality"/>
                     </Border>

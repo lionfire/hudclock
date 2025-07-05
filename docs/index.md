@@ -26,6 +26,13 @@ title: HudClock - Transparent Clock Overlay for Windows
 
 HudClock transforms how you perceive time throughout your day. This elegant, transparent clock floats on your screen, providing a constant yet unobtrusive reminder of time's passage without disrupting your workflow.
 
+<!-- Screenshot Gallery -->
+<div class="screenshot-gallery">
+  <img src="screenshots/analog-clock-24hour.png" alt="24-Hour Analog Clock" title="24-Hour Analog Clock - See your entire day at a glance">
+  <img src="screenshots/metric-time-clock.png" alt="Metric Time Clock" title="Metric Time - Experience time in base-10">
+  <img src="screenshots/digital-clock-modern.png" alt="Modern Digital Clock" title="Clean, modern digital display">
+</div>
+
 ## Why HudClock?
 
 <div class="feature-grid">
@@ -64,10 +71,14 @@ HudClock transforms how you perceive time throughout your day. This elegant, tra
 - **Digital Displays**: Modern or retro seven-segment styles
 - **Minimalist Modes**: Show just the essential elements
 
+![Clock Styles](screenshots/clock-styles-gallery.png)
+
 ### Complete Customization
 - **Transparency Control**: Separate controls for background and clock elements
 - **Size & Position**: Place and scale your clock anywhere on screen
 - **Visual Options**: Toggle seconds hand, date display, center dots, and more
+
+![Customization Demo](screenshots/transparency-demo.gif)
 
 ### Smart Integration
 - **System Tray**: Minimize to tray when not needed
@@ -88,6 +99,8 @@ HudClock transforms how you perceive time throughout your day. This elegant, tra
 ## The HudClock Experience
 
 Imagine glancing at your screen and instantly knowing not just what time it is, but how your day is progressing. With a 24-hour analog clock, noon is at the top and midnight at the bottom – you can literally see your entire day laid out before you. Or try metric time and experience a completely different rhythm to your day with 10 hours instead of 24.
+
+![Click-through Mode Demo](screenshots/click-through-demo.gif)
 
 For those who prefer subtlety, reduce the opacity until just a few semi-transparent elements float at the edge of your vision – present when you need them, invisible when you don't.
 

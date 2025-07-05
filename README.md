@@ -30,6 +30,10 @@ HudClock is a WPF application designed to provide an unobtrusive yet constantly 
 - **System Tray Integration**: Minimize to tray with configurable visibility
 - **High Performance**: Configurable update rates up to 120fps for smooth animations
 
+## Screenshots
+
+See HudClock in action in our [features gallery](https://lionfire.github.io/hudclock/features).
+
 ## Download & Installation
 
 Download the latest release from the [Releases page](https://github.com/lionfire/hudclock/releases/latest).
